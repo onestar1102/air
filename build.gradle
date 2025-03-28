@@ -1,7 +1,10 @@
+import com.github.gradle.node.npm.task.NpmTask
+
 plugins {
     id 'java'
     id 'org.springframework.boot' version '3.4.4'
     id 'io.spring.dependency-management' version '1.1.7'
+    id "com.github.node-gradle.node" version "7.1.0"
 }
 
 group = 'com.air'
@@ -37,16 +40,28 @@ dependencies {
 }
 
 def reactDir = "$rootDir/front"
-def reactBuildDir = "$reactDir/build" // Vite인 경우는 "dist"
+def reactBuildDir = "$reactDir/build"
+def reactNodeDir = "$reactDir/node_modules";
 
-task buildReact(type: Exec) {
-    workingDir reactDir
-    commandLine "npm", "install"
-    commandLine "npm", "run", "build"
+
+
+node {
+    version = '22.14.0'
+    npmVersion = '11.2.0'
+    download = true // 👉 이게 핵심. 로컬에 설치된 npm 안 씀
+    workDir = file("${project.buildDir}/nodejs")
+    npmWorkDir = file("${project.buildDir}/npm")
+}
+
+task buildReact(type: NpmTask) {
+    dependsOn npmInstall
+    workingDir = file("$reactDir")
+    args = ['run', 'full-build']
 }
 
 task cleanReact(type: Delete) {
     delete reactBuildDir
+    delete reactNodeDir
 }
 
 bootJar {
