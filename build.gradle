@@ -36,6 +36,23 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-tasks.named('test') {
-    useJUnitPlatform()
+def reactDir = "$rootDir/front"
+def reactBuildDir = "$reactDir/build" // Vite인 경우는 "dist"
+
+task buildReact(type: Exec) {
+    workingDir reactDir
+    commandLine "npm", "install"
+    commandLine "npm", "run", "build"
+}
+
+task cleanReact(type: Delete) {
+    delete reactBuildDir
+}
+
+bootJar {
+    dependsOn buildReact
+}
+
+clean {
+    dependsOn cleanReact
 }
