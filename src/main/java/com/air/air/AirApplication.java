@@ -2,13 +2,15 @@ package com.air.air;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
-public class AirApplication {
+@EnableScheduling
 
-    public static void main(String[] args) {
-        SpringApplication.run(AirApplication.class, args);
-        // push 테스트 입니다.
+    public class AirApplication {
+        public static void main(String[] args){
+            SpringApplication.run(AirApplication.class, args);
+        }
     }
 
-}
+

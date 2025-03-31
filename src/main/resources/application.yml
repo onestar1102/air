@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: jdbc:mariadb://193.122.96.203:13306/airbooking
+    username: airbooking
+    password: 1q2w3e4r!!
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate: 
+        format_sql: true
