@@ -46,11 +46,18 @@ public class AirService {
 
         try {
             ResponseEntity<String> response = restTemplate.getForEntity(uri, String.class);
-            String xmlData = response.getBody();
+            String xmlDataRaw = response.getBody();
+            String xmlData = new String(xmlDataRaw.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+
 
             System.out.println("API응답 XML 시작");
             System.out.println(xmlData);
             System.out.println("API응답 XML 끝");
+
+            System.out.println("응답 XML ↓↓↓↓↓");
+            System.out.println(xmlData);
+            System.out.println("응답 XML ↑↑↑↑↑↑");
+
 
             JAXBContext context = JAXBContext.newInstance(AirResponse.class);
             Unmarshaller unmarshaller = context.createUnmarshaller();
