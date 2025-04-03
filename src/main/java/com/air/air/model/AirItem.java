@@ -7,8 +7,14 @@ public class AirItem {
     @XmlElement(name = "vihicleId")
     private String airNumber;
 
-    @XmlElement(name = "airlineNm")
+    @XmlElement(name = "airlineNm") //항공 이름
     private String airlineName;
+
+    @XmlElement(name = "economyCharge") //이코노미 요금
+    private Integer economyCharge;
+
+    @XmlElement(name = "prestigeCharge") //프레스티지 요금
+    private Integer prestigeCharge;
 
     @XmlElement(name = "depPlandTime") // 예정 출발시각
     private String departureTime;
@@ -43,5 +49,14 @@ public class AirItem {
     public String getDeparture() {
         return departure;
     }
+
+    public Integer getEconomyCharge(){
+        return economyCharge;
+    }
+
+    public Integer getPrestigeCharge(){
+        return prestigeCharge;
+    }
+
 }
 //API 응답받을 DTO

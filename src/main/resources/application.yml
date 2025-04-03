@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mariadb://193.122.96.203:13306/airbooking
+    url: jdbc:mariadb://193.122.96.203:13306/airbooking?useUnicode=true&characterEncoding=utf8
     username: airbooking
     password: 1q2w3e4r!!
 

@@ -6,12 +6,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-public class AirController {
-
-    @RestController
-    @RequestMapping("/api/air")
-    @RequiredArgsConstructor
-    public class AirContorller{
+@RestController
+@RequestMapping("/api/air")
+@RequiredArgsConstructor
+    public class AirController{
         private final AirService airService;
 
         @GetMapping
@@ -20,4 +18,4 @@ public class AirController {
         }
     }
 
-}
+

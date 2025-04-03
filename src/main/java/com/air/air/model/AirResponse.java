@@ -7,7 +7,8 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.Data;
 
 import java.util.List;
-
+@XmlRootElement(name = "response")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class AirResponse {
     @XmlElement(name = "body")
     private Body body;

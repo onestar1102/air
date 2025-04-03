@@ -2,10 +2,8 @@ package com.air.air.model;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.*;
-import java.util.List;
 
 @Entity
 @Getter @Setter
@@ -24,7 +22,10 @@ public class AirInfo {
     private String arrival;
     private String departureTime;
     private String arrivalTime;
-    private int seatsAbailable;
+    private int seatsAvailable;
+    private String airlineName;
+    private Integer economyCharge;
+    private Integer prestigeCharge;
 
 }
 
