@@ -12,11 +12,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-import java.nio.charset.StandardCharsets;
 
 import java.io.ByteArrayInputStream;
-import java.io.StringReader;
-import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -25,69 +23,75 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AirService {
     private final AirRepository airRepository;
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
+
+    private final String serviceKey = "dKHxaOXQyGKpEWYiH5GZFtJnJv0wotR6Yy3xe%2BMEWUpNxGc1ylBndGDE7LarQ1zgs5m%2FwZDtMS7Qfbcy7Xjsfw%3D%3D";
+
+    private final String[] airports = {
+            "NAARKSS", // 김포
+            "NAARKPK", // 김해
+            "NAARKPC", // 제주
+            "NAARKTN", // 대구
+            "NAARKJJ", // 광주
+            "NAARKCH", // 청주
+            "NAARKNW", // 원주
+            "NAARKPU", // 울산
+            "NAARKNY"  // 양양
+    };
 
     @Scheduled(fixedRate = 60000)
     public void fetchAirData() {
         String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        String serviceKey = "dKHxaOXQyGKpEWYiH5GZFtJnJv0wotR6Yy3xe%2BMEWUpNxGc1ylBndGDE7LarQ1zgs5m%2FwZDtMS7Qfbcy7Xjsfw%3D%3D";
 
-        URI uri = UriComponentsBuilder
-                .fromUriString("https://apis.data.go.kr/1613000/DmstcFlightNvgInfoService/getFlightOpratInfoList")
-                .queryParam("serviceKey", serviceKey)
-                .queryParam("depAirportId", "NAARKJJ")
-                .queryParam("arrAirportId", "NAARKPC")
-                .queryParam("depPlandTime", today)
-                .queryParam("pageNo", "1")
-                .queryParam("numOfRows", "100")
-                .queryParam("_type", "xml")
-                .build(true)
-                .toUri();
+        for (String depAirport : airports) {
+            for (String arrAirport : airports) {
+                if (depAirport.equals(arrAirport)) continue; // 출발지와 도착지가 같은 경우는 무시
 
-        try {
-            ResponseEntity<String> response = restTemplate.getForEntity(uri, String.class);
-            String xmlDataRaw = response.getBody();
-            String xmlData = new String(xmlDataRaw.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+                try {
+                    UriComponentsBuilder builder = UriComponentsBuilder
+                            .fromHttpUrl("https://apis.data.go.kr/1613000/DmstcFlightNvgInfoService/getFlightOpratInfoList")
+                            .queryParam("serviceKey", serviceKey)
+                            .queryParam("depAirportId", depAirport)
+                            .queryParam("arrAirportId", arrAirport)
+                            .queryParam("depPlandTime", today)
+                            .queryParam("pageNo", "1")
+                            .queryParam("numOfRows", "100")
+                            .queryParam("_type", "xml");
 
+                    String url = builder.build(true).toUriString();
 
-            System.out.println("API응답 XML 시작");
-            System.out.println(xmlData);
-            System.out.println("API응답 XML 끝");
+                    ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+                    String xmlRaw = response.getBody();
+                    String xmlData = new String(xmlRaw.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
 
-            System.out.println("응답 XML ↓↓↓↓↓");
-            System.out.println(xmlData);
-            System.out.println("응답 XML ↑↑↑↑↑↑");
+                    JAXBContext context = JAXBContext.newInstance(AirResponse.class);
+                    Unmarshaller unmarshaller = context.createUnmarshaller();
+                    ByteArrayInputStream inputStream = new ByteArrayInputStream(xmlData.getBytes(StandardCharsets.UTF_8));
+                    AirResponse airResponse = (AirResponse) unmarshaller.unmarshal(inputStream);
+                    List<AirItem> itemList = airResponse.getBody().getItems().getItemList();
 
+                    for (AirItem item : itemList) {
+                        boolean exists = airRepository
+                                .findAll().stream()
+                                .anyMatch(existing -> existing.getFlightNumber().equals(item.getAirNumber()) && existing.getDepartureTime().equals(item.getDepartureTime()));
 
-            JAXBContext context = JAXBContext.newInstance(AirResponse.class);
-            Unmarshaller unmarshaller = context.createUnmarshaller();
-            ByteArrayInputStream inputStream = new ByteArrayInputStream(xmlData.getBytes(StandardCharsets.UTF_8));
-            AirResponse airResponse = (AirResponse) unmarshaller.unmarshal(inputStream);
-            List<AirItem> itemList = airResponse.getBody().getItems().getItemList();
+                        if (exists) continue; // 중복된 항공편은 저장하지 않음
 
-            for (AirItem item : itemList) {
-                boolean exists = !airRepository
-                        .findByFlightNumberAndDepartureTime(item.getAirNumber(), item.getDepartureTime())
-                        .isEmpty();
+                        AirInfo info = new AirInfo();
+                        info.setFlightNumber(item.getAirNumber());
+                        info.setDeparture(item.getDeparture());
+                        info.setArrival(item.getArrival());
+                        info.setDepartureTime(item.getDepartureTime());
+                        info.setArrivalTime(item.getArrivalTime());
+                        info.setSeatsAvailable(100); // 좌석 수는 임의로 지정
+                        airRepository.save(info);
+                    }
 
-                if (exists) continue;
-
-                AirInfo info = new AirInfo();
-                info.setFlightNumber(item.getAirNumber());
-                info.setDeparture(item.getDeparture());
-                info.setArrival(item.getArrival());
-                info.setDepartureTime(item.getDepartureTime());
-                info.setArrivalTime(item.getArrivalTime());
-                info.setSeatsAvailable(100);
-                info.setAirlineName(item.getAirlineName());
-                info.setEconomyCharge(item.getEconomyCharge() != null ? item.getEconomyCharge() : 0);
-                info.setPrestigeCharge(item.getPrestigeCharge() != null ? item.getPrestigeCharge() : 0);
-
-                airRepository.save(info);
+                } catch (Exception e) {
+                    System.out.println(depAirport + "→" + arrAirport + " 노선 수집 중 에러 발생:");
+                    e.printStackTrace();
+                }
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
