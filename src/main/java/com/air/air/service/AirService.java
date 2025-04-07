@@ -36,107 +36,110 @@ public class AirService {
             "NAARKCH", "NAARKNW", "NAARKPU", "NAARKNY"
     };
 
-    // ✨ 추가: 노선별 실패 카운터
     private final Map<String, Integer> emptyRouteCount = new HashMap<>();
 
     @Scheduled(fixedRate = 60000)
     public void fetchAirData() {
-        String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-
         HttpHeaders headers = new HttpHeaders();
         headers.set("Accept", "*/*");
         headers.set("User-Agent", "Mozilla/5.0");
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        for (String depAirport : airports) {
-            for (String arrAirport : airports) {
-                if (depAirport.equals(arrAirport)) continue;
+        for (int d = 0; d < 7; d++) {   // ✨ 오늘부터 7일 동안
+            LocalDate targetDate = LocalDate.now().plusDays(d);
 
-                // ✨ 노선 키 만들기
-                String routeKey = depAirport + "→" + arrAirport;
+            // API 요청용 (yyyyMMdd)
+            String apiDate = targetDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+            // 콘솔 출력용 (yyyy-MM-dd)
+            String displayDate = targetDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-                // ✨ 3번 이상 비어있으면 스킵
-                if (emptyRouteCount.getOrDefault(routeKey, 0) >= 3) {
-                    System.out.println(routeKey + " : 3번 연속 비어있어 요청 스킵");
-                    continue;
-                }
+            for (String depAirport : airports) {
+                for (String arrAirport : airports) {
+                    if (depAirport.equals(arrAirport)) continue;
 
-                try {
-                    String url = "https://apis.data.go.kr/1613000/DmstcFlightNvgInfoService/getFlightOpratInfoList"
-                            + "?serviceKey=" + serviceKey
-                            + "&depAirportId=" + depAirport
-                            + "&arrAirportId=" + arrAirport
-                            + "&depPlandTime=" + today
-                            + "&pageNo=1"
-                            + "&numOfRows=100"
-                            + "&_type=xml";
+                    String routeKey = depAirport + "→" + arrAirport + "@" + apiDate;
 
-                    ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+                    if (emptyRouteCount.getOrDefault(routeKey, 0) >= 3) {
+                        System.out.println(routeKey + " : 3번 연속 비어있어 요청 스킵");
+                        continue;
+                    }
 
-                    String xmlRaw = response.getBody();
-                    String xmlData = new String(xmlRaw.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+                    try {
+                        String url = "https://apis.data.go.kr/1613000/DmstcFlightNvgInfoService/getFlightOpratInfoList"
+                                + "?serviceKey=" + serviceKey
+                                + "&depAirportId=" + depAirport
+                                + "&arrAirportId=" + arrAirport
+                                + "&depPlandTime=" + apiDate    // ✨ 반드시 apiDate 사용
+                                + "&pageNo=1"
+                                + "&numOfRows=100"
+                                + "&_type=xml";
 
-                    if (xmlData.contains("<OpenAPI_ServiceResponse>")) {
-                        System.out.println(routeKey + " API 인증키 오류 또는 서비스 오류 발생");
+                        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+
+                        String xmlRaw = response.getBody();
+                        String xmlData = new String(xmlRaw.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+
+                        System.out.println("[" + displayDate + "] " + depAirport + " → " + arrAirport);
                         System.out.println(xmlData);
-                        continue;
+
+                        if (xmlData.contains("<OpenAPI_ServiceResponse>")) {
+                            System.out.println(routeKey + " API 인증키 오류 또는 서비스 오류 발생");
+                            System.out.println(xmlData);
+                            continue;
+                        }
+                        if (!xmlData.contains("<response>")) {
+                            System.out.println(routeKey + " : 정상 응답 아님, 건너뜀");
+                            continue;
+                        }
+                        if (xmlData.contains("<resultCode>03</resultCode>")) {
+                            System.out.println(routeKey + ": 데이터 없음 (NO_DATA)");
+                            emptyRouteCount.put(routeKey, emptyRouteCount.getOrDefault(routeKey, 0) + 1);
+                            continue;
+                        }
+
+                        JAXBContext context = JAXBContext.newInstance(AirResponse.class);
+                        Unmarshaller unmarshaller = context.createUnmarshaller();
+                        ByteArrayInputStream inputStream = new ByteArrayInputStream(xmlData.getBytes(StandardCharsets.UTF_8));
+                        AirResponse airResponse = (AirResponse) unmarshaller.unmarshal(inputStream);
+
+                        if (airResponse.getBody() == null || airResponse.getBody().getItems() == null || airResponse.getBody().getItems().getItemList() == null) {
+                            System.out.println(routeKey + ": 데이터 없음 (items 비어있음)");
+                            emptyRouteCount.put(routeKey, emptyRouteCount.getOrDefault(routeKey, 0) + 1);
+                            continue;
+                        }
+
+                        List<AirItem> itemList = airResponse.getBody().getItems().getItemList();
+                        if (itemList.isEmpty()) {
+                            System.out.println(routeKey + " : 가져온 데이터 없음 (itemList 비어있음)");
+                            emptyRouteCount.put(routeKey, emptyRouteCount.getOrDefault(routeKey, 0) + 1);
+                            continue;
+                        }
+
+                        emptyRouteCount.put(routeKey, 0);
+
+                        for (AirItem item : itemList) {
+                            boolean exists = airRepository.existsByFlightNumberAndDepartureTime(item.getAirNumber(), item.getDepartureTime());
+                            if (exists) continue;
+
+                            AirInfo info = new AirInfo();
+                            info.setFlightNumber(item.getAirNumber());
+                            info.setDeparture(item.getDeparture());
+                            info.setArrival(item.getArrival());
+                            info.setDepartureTime(item.getDepartureTime());
+                            info.setArrivalTime(item.getArrivalTime());
+                            info.setSeatsAvailable(100);
+                            info.setAirlineName(item.getAirlineName());
+                            info.setEconomyCharge(item.getEconomyCharge() != null ? item.getEconomyCharge() : 0);
+                            info.setPrestigeCharge(item.getPrestigeCharge() != null ? item.getPrestigeCharge() : 0);
+                            airRepository.save(info);
+                        }
+
+                        Thread.sleep(2000);
+
+                    } catch (Exception e) {
+                        System.out.println(routeKey + " 노선 수집 중 에러 발생:");
+                        e.printStackTrace();
                     }
-                    if (!xmlData.contains("<response>")) {
-                        System.out.println(routeKey + " : 정상 응답 아님, 건너뜀");
-                        continue;
-                    }
-                    if (xmlData.contains("<resultCode>03</resultCode>")) {
-                        System.out.println(routeKey + ": 데이터 없음 (NO_DATA)");
-                        // ✨ 실패 카운트 올리기
-                        emptyRouteCount.put(routeKey, emptyRouteCount.getOrDefault(routeKey, 0) + 1);
-                        continue;
-                    }
-
-                    JAXBContext context = JAXBContext.newInstance(AirResponse.class);
-                    Unmarshaller unmarshaller = context.createUnmarshaller();
-                    ByteArrayInputStream inputStream = new ByteArrayInputStream(xmlData.getBytes(StandardCharsets.UTF_8));
-                    AirResponse airResponse = (AirResponse) unmarshaller.unmarshal(inputStream);
-
-                    if (airResponse.getBody() == null || airResponse.getBody().getItems() == null || airResponse.getBody().getItems().getItemList() == null) {
-                        System.out.println(routeKey + ": 데이터 없음 (items 비어있음)");
-                        // ✨ 실패 카운트 올리기
-                        emptyRouteCount.put(routeKey, emptyRouteCount.getOrDefault(routeKey, 0) + 1);
-                        continue;
-                    }
-
-                    List<AirItem> itemList = airResponse.getBody().getItems().getItemList();
-                    if (itemList.isEmpty()) {
-                        System.out.println(routeKey + " : 가져온 데이터 없음 (itemList 비어있음)");
-                        // ✨ 실패 카운트 올리기
-                        emptyRouteCount.put(routeKey, emptyRouteCount.getOrDefault(routeKey, 0) + 1);
-                        continue;
-                    }
-
-                    // ✨ 데이터가 있으면 카운터 초기화
-                    emptyRouteCount.put(routeKey, 0);
-
-                    for (AirItem item : itemList) {
-                        boolean exists = airRepository.existsByFlightNumberAndDepartureTime(item.getAirNumber(), item.getDepartureTime());
-                        if (exists) continue;
-
-                        AirInfo info = new AirInfo();
-                        info.setFlightNumber(item.getAirNumber());
-                        info.setDeparture(item.getDeparture());
-                        info.setArrival(item.getArrival());
-                        info.setDepartureTime(item.getDepartureTime());
-                        info.setArrivalTime(item.getArrivalTime());
-                        info.setSeatsAvailable(100);
-                        info.setAirlineName(item.getAirlineName());
-                        info.setEconomyCharge(item.getEconomyCharge() != null ? item.getEconomyCharge() : 0);
-                        info.setPrestigeCharge(item.getPrestigeCharge() != null ? item.getPrestigeCharge() : 0);
-                        airRepository.save(info);
-                    }
-
-                    Thread.sleep(2000);
-
-                } catch (Exception e) {
-                    System.out.println(routeKey + " 노선 수집 중 에러 발생:");
-                    e.printStackTrace();
                 }
             }
         }
