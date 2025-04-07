@@ -1,15 +1,11 @@
 package com.air.air;
 
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 
 @SpringBootApplication
 @EnableScheduling
@@ -19,16 +15,16 @@ public class AirApplication {
         SpringApplication.run(AirApplication.class, args);
     }
 
-    // ✅ UTF-8로 고정된 RestTemplate Bean 등록
+    // ★★★ 아래의 Bean 설정을 반드시 추가 ★★★
     @Bean
     public RestTemplate restTemplate() {
         RestTemplate restTemplate = new RestTemplate();
-        List<HttpMessageConverter<?>> converters = restTemplate.getMessageConverters();
-        for (HttpMessageConverter<?> converter : converters) {
-            if (converter instanceof StringHttpMessageConverter) {
-                ((StringHttpMessageConverter) converter).setDefaultCharset(StandardCharsets.UTF_8);
-            }
-        }
+
+        // URL 자동 인코딩 비활성화 (중요!)
+        DefaultUriBuilderFactory factory = new DefaultUriBuilderFactory();
+        factory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.NONE);
+
+        restTemplate.setUriTemplateHandler(factory);
         return restTemplate;
     }
 }

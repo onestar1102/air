@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface AirRepository extends JpaRepository<AirInfo, Long> {
     List<AirInfo> findByFlightNumberAndDepartureTime(String flightNumber, String departureTime);
+
+    boolean existsByFlightNumberAndDepartureTime(String airNumber, String departureTime);
 }
 
 
