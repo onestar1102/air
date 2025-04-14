@@ -1,25 +1,38 @@
-import logo from './logo.svg';
+// App.js
+import React, { useState, createContext } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import MainPage from './components/MainPage';
+import AirlineSearch from './components/Airline_search';
+import "react-datepicker/dist/react-datepicker.css";
 
-function App() {
+// 로그인 사용자 정보 공유를 위한 Context 생성
+export const UserContext = createContext(null);
+
+export default function App() {
+  const [user, setUser] = useState(null); // 로그인 사용자 상태
+  const [searchData, setSearchData] = useState(null); // 항공권 검색 데이터 상태
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      {/* 전체 앱에 user 정보를 제공 */}
+      <UserContext.Provider value={{ user, setUser }}>
+        <div className="flex flex-col min-h-screen">
+          <Header searchData={searchData} /> {/* 헤더에 검색 정보 전달 */}
+
+          <main className="flex-grow">
+            <Routes>
+              {/* 메인 페이지에서는 검색 결과 상태 설정 가능 */}
+              <Route path="/" element={<MainPage setSearchData={setSearchData} />} />
+              <Route path="/airline_search" element={<AirlineSearch />} />
+            </Routes>
+          </main>
+
+          <Footer />
+        </div>
+      </UserContext.Provider>
+    </Router>
   );
 }
-
-export default App;
