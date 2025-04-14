@@ -7,11 +7,14 @@ import com.air.air.repository.AirRepository;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.Unmarshaller;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -37,6 +40,8 @@ public class AirService {
     };
 
     private final Map<String, Integer> emptyRouteCount = new HashMap<>();
+
+    private final JdbcTemplate jdbcTemplate;
 
     @Scheduled(fixedRate = 60000)
     public void fetchAirData() {
@@ -148,4 +153,18 @@ public class AirService {
     public List<AirInfo> getAllAir() {
         return airRepository.findAll();
     }
+    @Scheduled(cron = "0 * * * * ?")  // 매 분마다 실행
+    public void cleanUpOldAirInfo() {
+        System.out.println("Cleaning up old air_info data (created_at 기준)...");
+
+        String sql = "DELETE FROM air_info " +
+                "WHERE created_at < NOW() - INTERVAL 3 HOUR";
+
+        int rowsAffected = jdbcTemplate.update(sql);
+
+        System.out.println("삭제된 행 수: " + rowsAffected);
+    }
+
+
+
 }
