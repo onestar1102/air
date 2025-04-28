@@ -1,4 +1,6 @@
 spring:
+  main:
+    lazy-initialization: true
   datasource:
     url: jdbc:mariadb://193.122.96.203:13306/airbooking?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul
     username: airbooking
