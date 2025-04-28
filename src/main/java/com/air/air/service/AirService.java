@@ -150,9 +150,11 @@ public class AirService {
         }
     }
 
-    // AirService.java
+    // AirService.java - 가격이 0원인 데이터들 예외처리
     public List<AirInfo> searchAirInfo(String departure, String arrival, String date) {
-        return airRepository.findByDepartureAndArrivalAndDepartureTimeStartingWith(departure, arrival, date);
+        return airRepository.findByDepartureAndArrivalAndDepartureTimeStartingWithAndEconomyChargeGreaterThan(
+                departure, arrival, date, 0);
+
     }
 
     @Scheduled(cron = "0 * * * * ?")  // 매 분마다 실행
