@@ -13,9 +13,17 @@ import java.util.List;
         private final AirService airService;
 
         @GetMapping
-        public List<AirInfo> getAir(){
-            return airService.getAllAir();
+        public List<AirInfo> searchAirInfo(
+                @RequestParam(required = false) String departure,
+                @RequestParam(required = false) String arrival,
+                @RequestParam(required = false) String date
+        ){
+            if (departure != null && arrival != null && date != null){
+                return airService.searchAirInfo(departure, arrival, date);
+            } else{
+                return airService.getAllAir();
+            }
         }
-    }
+}
 
 

@@ -1,7 +1,9 @@
     package com.air.air.model;
     import jakarta.xml.bind.annotation.XmlElement;
     import jakarta.xml.bind.annotation.XmlRootElement;
+    import lombok.Getter;
 
+    @Getter
     @XmlRootElement(name = "item")
     public class AirItem {
         @XmlElement(name = "vihicleId")

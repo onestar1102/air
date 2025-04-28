@@ -4,8 +4,11 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,6 +29,10 @@ public class AirInfo {
     private String airlineName;
     private Integer economyCharge;
     private Integer prestigeCharge;
+
+    @CreatedDate
+    @Column(updatable = false)
+    private java.time.LocalDateTime createdAt;
 
 }
 

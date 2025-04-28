@@ -64,18 +64,13 @@ export default function Header({ searchData }) {
       alert("출발지와 도착지는 서로 달라야 합니다.");
       return;
     }
-
-    navigate("/airline_search", {
-      state: {
-        searchData: {
-          departure,
-          arrival,
-          startDate,
-          returnDate,
-          passengers,
-        },
-      },
+    //수정 2025-04-28
+    const searchParams = new URLSearchParams({
+        departure: departure.value,
+        arrival:arrival.value,
+        date: startDate.toISOString().slice(0, 10).replace(/-/g,''),//'yyyymmdd'형태로 변환
     });
+    navigate(`/Airline_search?${searchParams.toString()}`);
   };
 
   return (

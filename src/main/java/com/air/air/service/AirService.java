@@ -150,9 +150,11 @@ public class AirService {
         }
     }
 
-    public List<AirInfo> getAllAir() {
-        return airRepository.findAll();
+    // AirService.java
+    public List<AirInfo> searchAirInfo(String departure, String arrival, String date) {
+        return airRepository.findByDepartureAndArrivalAndDepartureTimeStartingWith(departure, arrival, date);
     }
+
     @Scheduled(cron = "0 * * * * ?")  // 매 분마다 실행
     public void cleanUpOldAirInfo() {
         System.out.println("Cleaning up old air_info data (created_at 기준)...");
@@ -163,6 +165,10 @@ public class AirService {
         int rowsAffected = jdbcTemplate.update(sql);
 
         System.out.println("삭제된 행 수: " + rowsAffected);
+    }
+    //AirService.java 에서 전체 데이터 반환
+    public List<AirInfo> getAllAir(){
+        return airRepository.findAll();
     }
 
 
