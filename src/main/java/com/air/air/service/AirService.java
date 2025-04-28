@@ -7,16 +7,17 @@ import com.air.air.repository.AirRepository;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.Unmarshaller;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
@@ -151,9 +152,9 @@ public class AirService {
     }
 
     // AirService.java - 가격이 0원인 데이터들 예외처리
-    public List<AirInfo> searchAirInfo(String departure, String arrival, String date) {
+    public Page<AirInfo> searchAirInfo(String departure, String arrival, String date, Pageable pageable) {
         return airRepository.findByDepartureAndArrivalAndDepartureTimeStartingWithAndEconomyChargeGreaterThan(
-                departure, arrival, date, 0);
+                departure, arrival, date, 0, pageable);
 
     }
 
@@ -169,8 +170,8 @@ public class AirService {
         System.out.println("삭제된 행 수: " + rowsAffected);
     }
     //AirService.java 에서 전체 데이터 반환
-    public List<AirInfo> getAllAir(){
-        return airRepository.findAll();
+    public Page<AirInfo> getAllAir(Pageable pageable){
+        return airRepository.findAll(pageable);
     }
 
 

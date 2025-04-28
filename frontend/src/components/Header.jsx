@@ -33,28 +33,22 @@ export default function Header({ searchData }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
-  useEffect(() => {
-    axios.get("/api/air")
-        .then(response => {
-          console.log("받은 데이터:", response.data); // ✅ 일단 확인용
-
-          const air = response.data;
-
-          const departureAirports = [...new Set(air.map(f => f.departure))];
-
-          const options = departureAirports.map(code => ({
-            value: code,
-            label: code
-          }));
-
-          setAirportOptions(options);
+    useEffect(() => {
+        axios.get("/api/air", {
+            params: { page: 0, size: 1000 } // 충분히 크게 받아오기
         })
-        .catch(error => {
-          console.error("공항 목록 불러오기 실패", error);
-        });
-  }, []);
+            .then(response => {
+                const allFlights = response.data.content;  // ✨ content로 수정
+                const uniqueAirports = [...new Set(allFlights.map(f => f.departure))];
+                setAirportOptions(uniqueAirports.map(airport => ({ value: airport, label: airport })));
+            })
+            .catch(error => {
+                console.error("공항 데이터 로딩 실패", error);
+            });
+    }, []);
 
   const handleSearch = () => {
+
     if (!departure || !arrival || !startDate) {
       alert("출발지, 도착지, 가는 편 날짜를 모두 선택해주세요.");
       return;

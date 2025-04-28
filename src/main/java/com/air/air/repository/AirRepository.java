@@ -1,7 +1,11 @@
 package com.air.air.repository;
 
 import com.air.air.model.AirInfo;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+
 
 import java.util.List;
 
@@ -15,8 +19,8 @@ public interface AirRepository extends JpaRepository<AirInfo, Long> {
     List<AirInfo> findByDepartureAndArrivalAndDepartureTimeStartingWith(String departure, String arrival, String date);
 
     // ✨ 새로 추가할 필터링 메서드
-    List<AirInfo> findByDepartureAndArrivalAndDepartureTimeStartingWithAndEconomyChargeGreaterThan(
-            String departure, String arrival, String date, int economyCharge
+    Page<AirInfo> findByDepartureAndArrivalAndDepartureTimeStartingWithAndEconomyChargeGreaterThan(
+            String departure, String arrival, String date, int economyCharge, Pageable pageable //페이지 함수 추가
     );
 }
 
