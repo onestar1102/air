@@ -28,6 +28,17 @@ import java.util.List;
                 return airService.getAllAir(pageable);
             }
         }
+        //오는편 항공편 전용 api
+    @GetMapping("/return")
+    public Page<AirInfo> getReturnFlights(
+            @RequestParam String departure,
+            @RequestParam String arrival,
+            @RequestParam String date,
+            @RequestParam String afterTime,
+            @PageableDefault(size = 10) Pageable pageable
+    ) {
+        return airService.getReturnFlights(departure, arrival, date, afterTime, pageable);
+    }
 }
 
 

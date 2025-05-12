@@ -30,8 +30,10 @@ export default function Header({ searchData }) {
   const [passengers, setPassengers] = useState(1);
   const [directOnly, setDirectOnly] = useState(false);
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+    // ✅ 로그인 관련 상태
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const [userName, setUserName] = useState(""); // ✅ 사용자 이름 상태 추가
 
     useEffect(() => {
         axios.get("/api/air", {
@@ -41,6 +43,13 @@ export default function Header({ searchData }) {
                 const allFlights = response.data.content;  // ✨ content로 수정
                 const uniqueAirports = [...new Set(allFlights.map(f => f.departure))];
                 setAirportOptions(uniqueAirports.map(airport => ({ value: airport, label: airport })));
+                //로그인 유지 함수
+                const savedUser = localStorage.getItem("user");
+                if (savedUser) {
+                    const userData = JSON.parse(savedUser);
+                    setUserName(userData.name);
+                    setIsLoggedIn(true);
+                }
             })
             .catch(error => {
                 console.error("공항 데이터 로딩 실패", error);
@@ -66,6 +75,11 @@ export default function Header({ searchData }) {
     });
     navigate(`/Airline_search?${searchParams.toString()}`);
   };
+    const handleLogout = () => {
+        localStorage.removeItem("user");
+        setIsLoggedIn(false);
+        setUserName(""); // ✅ 로그아웃 시 사용자 이름 초기화
+    };
 
   return (
       <div className="bg-[#03284F] text-white p-10 w-full">
@@ -77,9 +91,14 @@ export default function Header({ searchData }) {
             <FaGlobe />
             <FaHeart />
             <FaUserCircle />
-            <span className="cursor-pointer" onClick={() => setShowModal(true)}>
-            {isLoggedIn ? "마이페이지" : "로그인"}
+              <span className="cursor-pointer" onClick={() => isLoggedIn ? setIsLoggedIn(false) : setShowModal(true)}>
+          {isLoggedIn ? "로그아웃" : "로그인"}
           </span>
+              {isLoggedIn && (
+                  <span className="ml-2 font-semibold cursor-pointer" onClick={() => navigate("/mypage")}>
+              {userName}님
+          </span>)}
+              {/* ✅ 로그인 시 이름 클릭하면 마이페이지 이동 */}
             <FaBars className="text-xl" />
           </div>
         </div>
@@ -179,11 +198,16 @@ export default function Header({ searchData }) {
                 </label>
               </div>
 
-              <LoginSignupModal
-                  open={showModal}
-                  setOpen={setShowModal}
-                  onLoginSuccess={() => setIsLoggedIn(true)}
-              />
+                {/* ✅ 로그인/회원가입 모달 */}
+                <LoginSignupModal
+                    open={showModal}
+                    setOpen={setShowModal}
+                    onLoginSuccess={(name) => {
+                        setIsLoggedIn(true);
+                        setUserName(name); // ✅ 로그인 성공 시 사용자 이름 저장
+                        localStorage.setItem("user", JSON.stringify({ name })); // ✅ 로그인 정보 저장
+                    }}
+                />
             </div>
         )}
       </div>

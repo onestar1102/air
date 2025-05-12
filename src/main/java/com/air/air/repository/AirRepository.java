@@ -22,6 +22,14 @@ public interface AirRepository extends JpaRepository<AirInfo, Long> {
     Page<AirInfo> findByDepartureAndArrivalAndDepartureTimeStartingWithAndEconomyChargeGreaterThan(
             String departure, String arrival, String date, int economyCharge, Pageable pageable //페이지 함수 추가
     );
+    //오는편 조회 메서드
+    Page<AirInfo> findByDepartureAndArrivalAndDepartureTimeStartingWithAndDepartureTimeGreaterThan(
+            String departure,
+            String arrival,
+            String date,
+            String afterDateTime,
+            Pageable pageable
+    );
 }
 
 

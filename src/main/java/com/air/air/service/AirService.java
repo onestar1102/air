@@ -173,6 +173,12 @@ public class AirService {
     public Page<AirInfo> getAllAir(Pageable pageable){
         return airRepository.findAll(pageable);
     }
+    // ✅ 서비스 메서드 추가
+    public Page<AirInfo> getReturnFlights(String departure, String arrival, String date, String afterTime, Pageable pageable) {
+        return airRepository.findByDepartureAndArrivalAndDepartureTimeStartingWithAndDepartureTimeGreaterThan(
+                departure, arrival, date, date + afterTime, pageable
+        );
+    }
 
 
 

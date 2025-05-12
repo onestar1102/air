@@ -2,7 +2,6 @@ package com.air.air.service;
 
 
 import com.air.air.model.User;
-
 import com.air.air.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
