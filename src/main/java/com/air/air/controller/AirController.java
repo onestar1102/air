@@ -12,23 +12,24 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/air")
 @RequiredArgsConstructor
-    public class AirController{
-        private final AirService airService;
+    public class AirController {
+    private final AirService airService;
 
-        @GetMapping
-        public Page<AirInfo> searchAirInfo(
-                @RequestParam(required = false) String departure,
-                @RequestParam(required = false) String arrival,
-                @RequestParam(required = false) String date,
-                @PageableDefault(size = 10) Pageable pageable //페이징 파라미터
-        ){
-            if (departure != null && arrival != null && date != null){
-                return airService.searchAirInfo(departure, arrival, date, pageable);
-            } else{
-                return airService.getAllAir(pageable);
-            }
+    @GetMapping
+    public Page<AirInfo> searchAirInfo(
+            @RequestParam(required = false) String departure,
+            @RequestParam(required = false) String arrival,
+            @RequestParam(required = false) String date,
+            @PageableDefault(size = 10) Pageable pageable //페이징 파라미터
+    ) {
+        if (departure != null && arrival != null && date != null) {
+            return airService.searchAirInfo(departure, arrival, date, pageable);
+        } else {
+            return airService.getAllAir(pageable);
         }
-        //오는편 항공편 전용 api
+    }
+
+    //오는편 항공편 전용 api
     @GetMapping("/return")
     public Page<AirInfo> getReturnFlights(
             @RequestParam String departure,
@@ -37,7 +38,8 @@ import java.util.List;
             @RequestParam String afterTime,
             @PageableDefault(size = 10) Pageable pageable
     ) {
-        return airService.getReturnFlights(departure, arrival, date, afterTime, pageable);
+        String fullDateTime = date + afterTime; // "yyyyMMddHHmm"
+        return airService.searchReturnFlights(departure, arrival, fullDateTime, pageable);
     }
 }
 

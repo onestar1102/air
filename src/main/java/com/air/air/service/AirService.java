@@ -157,6 +157,10 @@ public class AirService {
                 departure, arrival, date, 0, pageable);
 
     }
+    // 리턴 항공편 검색 메서드
+    public Page<AirInfo> searchReturnFlights(String departure, String arrival, String fullDateTime, Pageable pageable) {
+        return airRepository.findReturnFlightsAfter(departure, arrival, fullDateTime, pageable);
+    }
 
     @Scheduled(cron = "0 * * * * ?")  // 매 분마다 실행
     public void cleanUpOldAirInfo() {

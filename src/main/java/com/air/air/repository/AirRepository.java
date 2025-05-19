@@ -5,6 +5,8 @@ import com.air.air.model.AirInfo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 
 import java.util.List;
@@ -30,6 +32,13 @@ public interface AirRepository extends JpaRepository<AirInfo, Long> {
             String afterDateTime,
             Pageable pageable
     );
+    // 오는편 사용을 위한 쿼리 추가
+    @Query("SELECT a FROM AirInfo a WHERE a.departure = :dep AND a.arrival = :arr AND a.departureTime >= :startTime AND a.economyCharge > 0")
+    Page<AirInfo> findReturnFlightsAfter(
+            @Param("dep") String departure,
+            @Param("arr") String arrival,
+            @Param("startTime") String startTime,
+            Pageable pageable);
 }
 
 

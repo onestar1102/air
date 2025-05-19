@@ -19,6 +19,7 @@ export default function AirlineSearch() {
     const [selectedFlight, setSelectedFlight] = useState(null);
     const [returnFlights, setReturnFlights] = useState([]);
     const [returnSortOption, setReturnSortOption] = useState("출발시간순");
+    const returnDate = queryParams.get("returnDate");
 
     useEffect(() => {
         if (departure && arrival && date) {
@@ -85,27 +86,38 @@ export default function AirlineSearch() {
         setSelectedFlight(flight);
         const reverseDeparture = flight.arrival;
         const reverseArrival = flight.departure;
-        const afterTime = flight.arrivalTime.slice(8); // HHmm
-        const flightDate = flight.arrivalTime.slice(0, 8); // yyyyMMdd
+        const fallbackDate = flight.arrivalTime.slice(0, 8);
+        const fallbackTime = flight.arrivalTime.slice(8);
+
+        const baseDate = returnDate ?? fallbackDate;
+        const afterTime = fallbackTime; // ❗returnDate 상관없이 가는편 도착 이후 기준
+
+        // ❗ 도착 시간 이후 항공편만 필터링
+        const threshold = baseDate + afterTime;
 
         axios
             .get("/api/air/return", {
                 params: {
                     departure: reverseDeparture,
                     arrival: reverseArrival,
-                    date: flightDate,
+                    date: baseDate,
                     afterTime,
                     page: 0,
                     size: 10,
                 },
             })
+            // 수정 05-19
             .then((res) => {
-                setReturnFlights(res.data.content);
+                const filtered = res.data.content.filter(f =>
+                    String(f.departureTime).padStart(12, "0") >= threshold
+                );
+                setReturnFlights(filtered);
             })
             .catch((err) => {
                 console.error("오는편 불러오기 실패", err);
                 setReturnFlights([]);
             });
+
     };
 
     return (

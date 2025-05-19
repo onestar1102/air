@@ -71,6 +71,7 @@ export default function Header({ searchData }) {
             });
     }, []);
 
+  //   handleSearch 수정 05-19
   const handleSearch = () => {
 
     if (!departure || !arrival || !startDate) {
@@ -82,13 +83,27 @@ export default function Header({ searchData }) {
       alert("출발지와 도착지는 서로 달라야 합니다.");
       return;
     }
-    //수정 2025-04-28
+
+      // yyyyMMdd 포맷 함수 추가 - 05-19
+      const formatDate = (date) => {
+          const yyyy = date.getFullYear();
+          const mm = String(date.getMonth() + 1).padStart(2, '0');
+          const dd = String(date.getDate()).padStart(2, '0');
+          return `${yyyy}${mm}${dd}`;
+      };
+
+    //수정 2025-05-19
     const searchParams = new URLSearchParams({
         departure: departure.value,
         arrival:arrival.value,
-        date: startDate.toISOString().slice(0, 10).replace(/-/g,''),//'yyyymmdd'형태로 변환
+        date: formatDate(startDate), // ✅ 여기에서 변경!
     });
-    navigate(`/Airline_search?${searchParams.toString()}`);
+      // 오는편 날짜가 있으면 추가
+      if (returnDate) {
+          searchParams.append('returnDate', formatDate(returnDate));
+      }
+
+      navigate(`/Airline_search?${searchParams.toString()}`);
   };
     const handleLogout = () => {
         localStorage.removeItem("user");
