@@ -41,6 +41,7 @@ import java.util.List;
         String fullDateTime = date + afterTime; // "yyyyMMddHHmm"
         return airService.searchReturnFlights(departure, arrival, fullDateTime, pageable);
     }
+
 }
 
 

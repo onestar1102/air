@@ -1,8 +1,16 @@
-import React from "react";
+import React, {useContext} from "react";
 import { useNavigate } from "react-router-dom";
+import {UserContext} from "../App";
+import axios from "../api/axiosInstance";
 
-export default function MyPage({ user }) {
+const axiosInstance = axios.create({
+    baseURL: "/api", // ✅ 프록시 덕분에 자동으로 http://localhost:8000/api 로 요청됨
+    withCredentials: true, // 필요한 경우 인증 쿠키 유지
+});
+
+export default function MyPage() {
     const navigate = useNavigate();
+    const { user, setUser} = useContext(UserContext);
 
     // 유저 정보 없을 때 기본 화면
     if (!user || !user.name) {
@@ -12,6 +20,36 @@ export default function MyPage({ user }) {
             </div>
         );
     }
+
+    /* ------------------------------------------------------------------ */
+    /* ✅ 계정 삭제 핸들러 ------------------------------------------------ */
+    /* ------------------------------------------------------------------ */
+    const handleDeleteAccount = async () => {
+        if (!window.confirm("정말로 계정을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.")) {
+            return;
+        }
+
+        try {
+            // ✅ axiosInstance 사용 + baseURL 적용됨 → 실제로는 DELETE /api/users/by-username/{username}
+            const response = await axios.delete(`/users/by-username/${user.username}`);
+
+            alert(response.data.message || "계정이 삭제되었습니다.");
+            localStorage.removeItem("user");
+            setUser(null);
+            navigate("/");
+
+        } catch (err) {
+            console.error("계정 삭제 실패:", err);
+
+            const errorMessage =
+                err.response?.data?.message ||
+                err.message ||
+                "계정 삭제 중 오류가 발생했습니다.";
+
+            alert(errorMessage);
+        }
+    };
+    /* ------------------------------------------------------------------ */
 
     // 사용자 이름으로 이니셜 생성 (예: YB)
     const initials = user.name
@@ -92,12 +130,18 @@ export default function MyPage({ user }) {
                     </button>
                 </div>
 
-                {/* 계정 삭제 */}
+                {/* ✅ 계정 삭제 */}
                 <div className="border-t pt-4">
                     <h3 className="font-semibold text-gray-600 mb-2">계정</h3>
-                    <button className="text-red-600 hover:underline">계정 삭제</button>
+                    <button
+                        onClick={handleDeleteAccount} // ✅ 삭제 핸들러 연결
+                        className="text-red-600 hover:underline"
+                    >
+                        계정 삭제
+                    </button>
                 </div>
             </div>
         </div>
     );
 }
+export default axiosInstance;

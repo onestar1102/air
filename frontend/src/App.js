@@ -1,5 +1,5 @@
 // App.js
-import React, { useState, createContext } from 'react';
+import React, { useState, createContext, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import Header from './components/Header';
@@ -16,6 +16,23 @@ export default function App() {
   const [user, setUser] = useState(null); // 로그인 사용자 상태
   const [searchData, setSearchData] = useState(null); // 항공권 검색 데이터 상태
 
+  // ✅ 새로고침 시 localStorage에서 로그인 정보 복구
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
+  // ✅ user 상태 변경 시 localStorage 업데이트
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem("user", JSON.stringify(user));
+    } else {
+      localStorage.removeItem("user");
+    }
+  }, [user]);
+
   return (
     <Router>
       {/* 전체 앱에 user 정보를 제공 */}
@@ -29,7 +46,7 @@ export default function App() {
               <Route path="/" element={<MainPage setSearchData={setSearchData} />} />
               <Route path="/airline_search" element={<AirlineSearch />} />
               {/* ✅ 마이페이지 경로 추가 및 user prop 전달 */}
-              <Route path="/mypage" element={<MyPage user={user} />} />
+              <Route path="/mypage" element={<MyPage />} /> {/* ✅ prop 제거 */}
             </Routes>
           </main>
 

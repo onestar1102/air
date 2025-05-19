@@ -4,10 +4,14 @@ package com.air.air.service;
 import com.air.air.model.User;
 import com.air.air.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -15,6 +19,7 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
 
     // 🔍 중복 검사 후 저장
     public void saveUser(User user) {
@@ -50,5 +55,12 @@ public class UserService {
 
     public boolean existsByEmail(String email) {
         return userRepository.existsByEmail(email);
+    }
+    //사용자 계정 삭제 메서드
+    public void deleteByUsername(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."));
+
+        userRepository.delete(user);
     }
 }

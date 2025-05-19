@@ -64,5 +64,16 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "서버 오류가 발생했습니다.", "isLoggedIn", false));
         }
     }
+    @DeleteMapping("/api/users/by-username/{username}")
+    public ResponseEntity<?> deleteByUsername(@PathVariable String username) {
+        try {
+            userService.deleteByUsername(username);
+            return ResponseEntity.ok(Map.of("message", "계정이 삭제되었습니다."));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "서버 오류: " + e.getMessage()));
+        }
+    }
+
 
 }

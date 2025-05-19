@@ -132,7 +132,8 @@ export default function Header({ searchData }) {
               {isLoggedIn && (
                   <span className="ml-2 font-semibold">
               {userName}님
-            </span>)}
+            </span>
+              )}
 
               {/* ✅ 햄버거 메뉴 아이콘 */}
               <FaBars className="text-xl cursor-pointer" onClick={() => setHamburgerOpen(!hamburgerOpen)} />
