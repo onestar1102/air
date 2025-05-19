@@ -28,7 +28,8 @@ export default function App() {
               {/* 메인 페이지에서는 검색 결과 상태 설정 가능 */}
               <Route path="/" element={<MainPage setSearchData={setSearchData} />} />
               <Route path="/airline_search" element={<AirlineSearch />} />
-              <Route path="/mypage" element={<MyPage />} /> {/* ✅ 마이페이지 라우트 추가 */}
+              {/* ✅ 마이페이지 경로 추가 및 user prop 전달 */}
+              <Route path="/mypage" element={<MyPage user={user} />} />
             </Routes>
           </main>
 

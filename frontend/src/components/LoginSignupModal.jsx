@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import axios from "axios";
 import { UserContext } from "../App";
 
@@ -19,6 +19,10 @@ export default function LoginSignupModal({ open, setOpen, onLoginSuccess }) {
     setUsername("");
     setPassword("");
   };
+  // ✅ 모드(로그인/회원가입) 변경 시 모든 입력값 초기화
+  useEffect(() => {
+    resetForm();
+  }, [isLogin]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -52,10 +56,13 @@ export default function LoginSignupModal({ open, setOpen, onLoginSuccess }) {
 
       alert(response.data.message || (isLogin ? "로그인 성공" : "회원가입 성공"));
 
-      if (isLogin && response.data.name) {
-        setUser({ name: response.data.name, username: trimmedUsername });
-        onLoginSuccess(response.data.name);
-      }
+     if (isLogin && response.data.name){
+       const userData = {name:response.data.name, username: trimmedUsername};
+       const name = response.data.name;
+       setUser(userData);
+       localStorage.setItem("user", JSON.stringify(userData));
+       onLoginSuccess(name);
+     }
 
       resetForm();
       setOpen(false);

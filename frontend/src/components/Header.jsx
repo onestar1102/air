@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
 import { useNavigate, useLocation } from "react-router-dom";
 import "react-datepicker/dist/react-datepicker.css";
 import {
-  FaPlaneDeparture,
-  FaPlaneArrival,
-  FaCar,
-  FaHotel,
-  FaGlobe,
-  FaHeart,
-  FaUserCircle,
-  FaBars,
+    FaPlaneDeparture,
+    FaPlaneArrival,
+    FaCar,
+    FaHotel,
+    FaGlobe,
+    FaHeart,
+    FaUserCircle,
+    FaBars, FaQuestionCircle,
 } from "react-icons/fa";
 
 import axios from "axios";
@@ -29,6 +29,21 @@ export default function Header({ searchData }) {
   const [returnDate, setReturnDate] = useState(null);
   const [passengers, setPassengers] = useState(1);
   const [directOnly, setDirectOnly] = useState(false);
+
+    // ✅ 햄버거 메뉴 상태 및 외부 클릭 감지를 위한 ref
+    const [hamburgerOpen, setHamburgerOpen] = useState(false);
+    const menuRef = useRef(null);
+
+    // ✅ 외부 클릭 시 햄버거 메뉴 닫기
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (menuRef.current && !menuRef.current.contains(event.target)) {
+                setHamburgerOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     // ✅ 로그인 관련 상태
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -79,6 +94,7 @@ export default function Header({ searchData }) {
         localStorage.removeItem("user");
         setIsLoggedIn(false);
         setUserName(""); // ✅ 로그아웃 시 사용자 이름 초기화
+        navigate("/");           // ✅ 로그아웃 후 홈으로 이동
     };
 
   return (
@@ -91,15 +107,73 @@ export default function Header({ searchData }) {
             <FaGlobe />
             <FaHeart />
             <FaUserCircle />
-              <span className="cursor-pointer" onClick={() => isLoggedIn ? setIsLoggedIn(false) : setShowModal(true)}>
-          {isLoggedIn ? "로그아웃" : "로그인"}
-          </span>
+              {/* ✅ 로그인/로그아웃 토글 → “로그아웃” 제거 */}
+              {!isLoggedIn && (                       /* 로그인 안 됐을 때만 표시 */
+                  <span className="cursor-pointer" onClick={() => setShowModal(true)}>
+              로그인
+            </span>)}
+
+              {/* ✅ 닉네임은 단순 표시 (마이페이지 이동 삭제) */}
               {isLoggedIn && (
-                  <span className="ml-2 font-semibold cursor-pointer" onClick={() => navigate("/mypage")}>
+                  <span className="ml-2 font-semibold">
               {userName}님
-          </span>)}
-              {/* ✅ 로그인 시 이름 클릭하면 마이페이지 이동 */}
-            <FaBars className="text-xl" />
+            </span>)}
+
+              {/* ✅ 햄버거 메뉴 아이콘 */}
+              <FaBars className="text-xl cursor-pointer" onClick={() => setHamburgerOpen(!hamburgerOpen)} />
+
+              {/* ✅ 햄버거 메뉴 드롭다운 */}
+              {hamburgerOpen && (
+                  <div
+                      ref={menuRef}
+                      className="absolute right-0 top-10 w-60 bg-white text-black rounded-xl shadow-lg z-50"
+                  >
+                      <ul className="py-2 text-sm">
+                          <li className="px-5 py-3 hover:bg-gray-100 flex items-center cursor-pointer">
+                              <FaPlaneDeparture className="mr-3 text-blue-600" /> 항공권
+                          </li>
+                          <li className="px-5 py-3 hover:bg-gray-100 flex items-center cursor-pointer">
+                              <FaHotel className="mr-3 text-blue-600" /> 호텔
+                          </li>
+                          <li className="px-5 py-3 hover:bg-gray-100 flex items-center cursor-pointer">
+                              <FaCar className="mr-3 text-blue-600" /> 렌터카
+                          </li>
+                          {/* ✅ 도움말 메뉴 항목 추가 */}
+
+                          <hr className="my-1" />
+                          {/* ✅ 마이페이지 클릭 시 /mypage 이동 */}
+                          {isLoggedIn && (
+                              <li
+                                  className="px-5 py-3 hover:bg-gray-100 flex items-center cursor-pointer"
+                                  onClick={() => {
+                                      navigate("/mypage");          // ✅ 이동
+                                      setHamburgerOpen(false);      // ✅ 메뉴 닫기
+                                  }}
+                              >
+                                  <FaUserCircle className="mr-3 text-gray-600" /> 마이페이지
+                              </li>)}
+                          {/* ✅ 로그아웃 메뉴 추가 */}
+                          {isLoggedIn && (
+                              <li
+                                  className="px-5 py-3 hover:bg-gray-100 flex items-center cursor-pointer text-red-500"
+                                  onClick={handleLogout}
+                              >
+                                  <FaUserCircle className="mr-3" /> 로그아웃
+                              </li>
+                          )}
+                          {/* ✅ 도움말 메뉴 항목 추가 */}
+                          <li
+                              className="px-5 py-3 hover:bg-gray-100 flex items-center cursor-pointer"
+                              onClick={() => {
+                                  navigate("/help"); // 도움말 페이지로 이동
+                                  setHamburgerOpen(false); // 메뉴 닫기
+                              }}
+                          >
+                              <FaQuestionCircle className="mr-3 text-gray-600" /> 도움말
+                          </li>
+                      </ul>
+                  </div>
+              )}
           </div>
         </div>
 
