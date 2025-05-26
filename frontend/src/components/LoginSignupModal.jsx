@@ -24,6 +24,13 @@ export default function LoginSignupModal({ open, setOpen, onLoginSuccess }) {
     resetForm();
   }, [isLogin]);
 
+  // ✅ 모달이 열릴 때 항상 로그인 모드로 초기화
+  useEffect(() => {
+    if (open) {
+      setIsLogin(true);
+    }
+  }, [open]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -52,17 +59,28 @@ export default function LoginSignupModal({ open, setOpen, onLoginSuccess }) {
           ? { username: trimmedUsername, password: trimmedPassword }
           : { name, phone, email, username: trimmedUsername, password: trimmedPassword };
 
-      const response = await axios.post(url, payload);
+      // ✅ axios로 POST 요청 보내기
+      const response = await axios.post(url, payload, {
+        headers: { "Content-Type": "application/json" },
+      });
 
-      alert(response.data.message || (isLogin ? "로그인 성공" : "회원가입 성공"));
+      const result = response.data;
+      console.log("백엔드 응답:", result);
+      alert(result.message || (isLogin ? "로그인 성공" : "회원가입 성공"));
 
-     if (isLogin && response.data.name){
-       const userData = {name:response.data.name, username: trimmedUsername};
-       const name = response.data.name;
-       setUser(userData);
-       localStorage.setItem("user", JSON.stringify(userData));
-       onLoginSuccess(name);
-     }
+      if (isLogin && result.name) {
+        const userData = {
+          name: result.name,
+          username: result.username, // ✅ result.username 사용
+          email: result.email        // ✅ email도 포함
+        };
+        setUser(userData);
+        localStorage.setItem("user", JSON.stringify(userData));
+        onLoginSuccess(result.name);
+      }
+      if (!isLogin) {
+        setIsLogin(true); // ✅ 회원가입 후 로그인 폼으로 전환
+      }
 
       resetForm();
       setOpen(false);

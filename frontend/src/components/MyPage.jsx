@@ -1,22 +1,18 @@
 import React, {useContext} from "react";
 import { useNavigate } from "react-router-dom";
 import {UserContext} from "../App";
-import axios from "../api/axiosInstance";
 
-const axiosInstance = axios.create({
-    baseURL: "/api", // ✅ 프록시 덕분에 자동으로 http://localhost:8000/api 로 요청됨
-    withCredentials: true, // 필요한 경우 인증 쿠키 유지
-});
 
 export default function MyPage() {
     const navigate = useNavigate();
     const { user, setUser} = useContext(UserContext);
 
-    // 유저 정보 없을 때 기본 화면
-    if (!user || !user.name) {
+    // ✅ 수정된 부분: user.name 대신 user만 검사하도록 변경
+    if (!user) {
         return (
             <div className="p-10 text-center">
                 <h2 className="text-2xl font-bold">마이페이지</h2>
+                <p className="text-gray-500 mt-2">로딩 중...</p> {/* ✅ 로딩 메시지 표시 */}
             </div>
         );
     }
@@ -25,28 +21,26 @@ export default function MyPage() {
     /* ✅ 계정 삭제 핸들러 ------------------------------------------------ */
     /* ------------------------------------------------------------------ */
     const handleDeleteAccount = async () => {
-        if (!window.confirm("정말로 계정을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.")) {
-            return;
-        }
+        const confirmed = window.confirm("정말로 회원 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.");
+        if (!confirmed || !user?.username) return;
 
         try {
-            // ✅ axiosInstance 사용 + baseURL 적용됨 → 실제로는 DELETE /api/users/by-username/{username}
-            const response = await axios.delete(`/users/by-username/${user.username}`);
+            // ✅ DELETE 요청 보내기
+            const res = await fetch(`/api/users/${user.username}`, {
+                method: "DELETE",
+            });
 
-            alert(response.data.message || "계정이 삭제되었습니다.");
-            localStorage.removeItem("user");
-            setUser(null);
-            navigate("/");
-
-        } catch (err) {
-            console.error("계정 삭제 실패:", err);
-
-            const errorMessage =
-                err.response?.data?.message ||
-                err.message ||
-                "계정 삭제 중 오류가 발생했습니다.";
-
-            alert(errorMessage);
+            if (res.ok) {
+                alert("회원 탈퇴가 성공적으로 완료되었습니다."); // ✅ 회원 탈퇴 성공 메시지 추가
+                localStorage.removeItem("user");
+                setUser(null);
+                navigate("/");
+                window.location.reload(); // ✅ 수정된 부분: 사용자 정보 잔존 문제 해결을 위한 새로고침 추가
+            } else {
+                alert("회원 탈퇴에 실패했습니다.");
+            }
+        } catch (error) {
+            alert("서버 오류로 회원 탈퇴에 실패했습니다.");
         }
     };
     /* ------------------------------------------------------------------ */
@@ -76,21 +70,29 @@ export default function MyPage() {
 
                     {/* 메뉴 리스트 */}
                     {/*미구현*/}
-                    <div className="w-full mt-6 space-y-4">
-                        <button className="w-full flex items-center gap-2 text-left px-4 py-2 hover:bg-gray-100">
+                    <div className="w-full mt-6 divide-y">
+                        <button className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-100">
                             🎫 내 예약
+
                         </button>
-                        <button className="w-full flex items-center gap-2 text-left px-4 py-2 hover:bg-gray-100">
+                        <button className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-100">
                             🔔 가격 변동 알림
+
                         </button>
-                        <button className="w-full flex items-center gap-2 text-left px-4 py-2 hover:bg-gray-100">
+                        <button className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-100">
                             👤 계정
+
                         </button>
                     </div>
 
                     {/* 로그아웃 버튼 */}
                     <button
-                        onClick={() => navigate("/")}
+                        onClick={() => {
+                            localStorage.removeItem("user");
+                            setUser(null);
+                            navigate("/");
+                            window.location.reload(); // ✅ 로그아웃 후 상태 반영을 위한 새로고침
+                        }}
                         className="mt-6 bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
                     >
                         로그아웃
@@ -144,4 +146,3 @@ export default function MyPage() {
         </div>
     );
 }
-export default axiosInstance;

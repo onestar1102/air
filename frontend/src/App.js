@@ -6,6 +6,8 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import MainPage from './components/MainPage';
 import MyPage from "./components/MyPage"; // ✅ 마이페이지 컴포넌트 추가
+import AirBookingPayment from './components/AirBookingPayment'; // ✅추가
+import FlightCheckout from './components/FlightCheckout'; // ✅추가
 import AirlineSearch from './components/Airline_search';
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -13,8 +15,8 @@ import "react-datepicker/dist/react-datepicker.css";
 export const UserContext = createContext(null);
 
 export default function App() {
-  const [user, setUser] = useState(null); // 로그인 사용자 상태
-  const [searchData, setSearchData] = useState(null); // 항공권 검색 데이터 상태
+  // 로그인 사용자 상태 (예: { name: '홍길동', username: 'hong123' })
+  const [user, setUser] = useState(null);
 
   // ✅ 새로고침 시 localStorage에서 로그인 정보 복구
   useEffect(() => {
@@ -28,31 +30,44 @@ export default function App() {
   useEffect(() => {
     if (user) {
       localStorage.setItem("user", JSON.stringify(user));
-    } else {
-      localStorage.removeItem("user");
     }
   }, [user]);
 
+  // 항공권 검색 결과 상태 (Header 등에서 검색 결과 활용 가능)
+  const [searchData, setSearchData] = useState(null);
+
   return (
-    <Router>
-      {/* 전체 앱에 user 정보를 제공 */}
-      <UserContext.Provider value={{ user, setUser }}>
-        <div className="flex flex-col min-h-screen">
-          <Header searchData={searchData} user={user} setUser={setUser} /> {/* ✅ 로그인 상태 전달 */}
+      <Router>
+        {/* Context.Provider로 user 상태를 전역에서 사용 가능하게 함 */}
+        <UserContext.Provider value={{ user, setUser }}>
+          <div className="flex flex-col min-h-screen">
+            {/* Header에 로그인 상태, setter 전달 */}
+            <Header searchData={searchData} user={user} setUser={setUser} />
 
-          <main className="flex-grow">
-            <Routes>
-              {/* 메인 페이지에서는 검색 결과 상태 설정 가능 */}
-              <Route path="/" element={<MainPage setSearchData={setSearchData} />} />
-              <Route path="/airline_search" element={<AirlineSearch />} />
-              {/* ✅ 마이페이지 경로 추가 및 user prop 전달 */}
-              <Route path="/mypage" element={<MyPage />} /> {/* ✅ prop 제거 */}
-            </Routes>
-          </main>
+            <main className="flex-grow">
+              <Routes>
+                {/* 메인 페이지: 검색 시 setSearchData로 결과 저장 */}
+                <Route path="/" element={<MainPage setSearchData={setSearchData} />} />
 
-          <Footer />
-        </div>
-      </UserContext.Provider>
-    </Router>
+                {/* 항공권 검색 결과 페이지 */}
+                <Route path="/airline_search" element={<AirlineSearch />} />
+
+                {/* ✅ 마이페이지 경로 추가 및 user prop 전달 */}
+                <Route path="/mypage" element={<MyPage />} />
+
+                {/* ✅추가 FlightCheckout 라우트 */}
+                <Route path="/flight-checkout" element={<FlightCheckout />} />
+
+                {/* ✅추가 AirBookingPayment 라우트 추가 */}
+                <Route path="/airbooking-payment" element={<AirBookingPayment />} />
+
+              </Routes>
+            </main>
+
+            {/* 공통 하단 */}
+            <Footer />
+          </div>
+        </UserContext.Provider>
+      </Router>
   );
 }
