@@ -1,24 +1,24 @@
-// App.js
 import React, { useState, createContext, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import MainPage from './components/MainPage';
-import MyPage from "./components/MyPage"; // ✅ 마이페이지 컴포넌트 추가
-import AirBookingPayment from './components/AirBookingPayment'; // ✅추가
-import FlightCheckout from './components/FlightCheckout'; // ✅추가
-import AirlineSearch from './components/Airline_search';
+import MyPage from './components/MyPage';
+import AirBookingPayment from './components/AirBookingPayment';
+import FlightCheckout from './components/FlightCheckout';
+import AirlineSearch from "./components/Airline_search";
 import "react-datepicker/dist/react-datepicker.css";
+import './i18n/i18n';  // ✅추가
 
-// 로그인 사용자 정보 공유를 위한 Context 생성
+// 로그인 사용자 정보를 공유할 Context 생성
 export const UserContext = createContext(null);
 
 export default function App() {
   // 로그인 사용자 상태 (예: { name: '홍길동', username: 'hong123' })
   const [user, setUser] = useState(null);
 
-  // ✅ 새로고침 시 localStorage에서 로그인 정보 복구
+  //  앱이 처음 렌더링될 때 localStorage에서 사용자 정보 복원
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -26,7 +26,8 @@ export default function App() {
     }
   }, []);
 
-  // ✅ user 상태 변경 시 localStorage 업데이트
+  //  이 줄을 추가해서 항상 최신 상태 유지
+
   useEffect(() => {
     if (user) {
       localStorage.setItem("user", JSON.stringify(user));
@@ -52,14 +53,16 @@ export default function App() {
                 {/* 항공권 검색 결과 페이지 */}
                 <Route path="/airline_search" element={<AirlineSearch />} />
 
-                {/* ✅ 마이페이지 경로 추가 및 user prop 전달 */}
+                {/* 수정 마이페이지 경로 추가 및 user prop 전달 */}
                 <Route path="/mypage" element={<MyPage />} />
 
-                {/* ✅추가 FlightCheckout 라우트 */}
+                {/*  FlightCheckout 라우트 */}
                 <Route path="/flight-checkout" element={<FlightCheckout />} />
 
-                {/* ✅추가 AirBookingPayment 라우트 추가 */}
+                {/*  AirBookingPayment 라우트 추가 */}
                 <Route path="/airbooking-payment" element={<AirBookingPayment />} />
+
+
 
               </Routes>
             </main>

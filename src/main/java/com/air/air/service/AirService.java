@@ -32,7 +32,7 @@ public class AirService {
     private final RestTemplate restTemplate;   // ✅ API 호출용 HTTP 클라이언트
     private final JdbcTemplate jdbcTemplate;   // ✅ 직접 SQL 실행용 도구 (데이터 정리 시 사용)
 
-    private final String serviceKey = "..." ; // ✅ 공공 API 인증키 (URL-encoded)
+    private final String serviceKey = "no2XhuWFJAc1%2F%2Fa9X0T%2F76NllkASaSKNyw%2BkM5pBP2K7kZsqcb1GfhAuin0%2Ft4gVvqD9T8o%2FKU6f6rVcYNMoAw%3D%3D" ; // ✅ 공공 API 인증키 (URL-encoded)
 
     private final String[] airports = {
             "NAARKSS", "NAARKPK", "NAARKPC", "NAARKTN", "NAARKJJ",
@@ -89,10 +89,17 @@ public class AirService {
                         String xmlData = new String(xmlRaw.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
 
                         // ✅ 오류 응답 또는 빈 응답 검사
-                        if (xmlData.contains("<OpenAPI_ServiceResponse>") || !xmlData.contains("<response>")) {
-                            System.out.println(routeKey + " : API 오류 또는 잘못된 응답");
+//                       if (xmlData.contains("<OpenAPI_ServiceResponse>") || !xmlData.contains("<response>")) {
+//                           System.out.println(routeKey + " : API 오류 또는 잘못된 응답");
+//                           continue;
+//                       }
+
+                        if (xmlData.contains("<OpenAPI_ServiceResponse>")) {
+                            System.out.println(routeKey + " : 공공 API 인증 또는 요청 오류 (OpenAPI_ServiceResponse 포함됨)");
+                            System.out.println("🔴 응답 원문:\n" + xmlData);
                             continue;
                         }
+
                         if (xmlData.contains("<resultCode>03</resultCode>")) {
                             System.out.println(routeKey + ": NO_DATA (3회 카운트)");
                             emptyRouteCount.put(routeKey, emptyRouteCount.getOrDefault(routeKey, 0) + 1);
