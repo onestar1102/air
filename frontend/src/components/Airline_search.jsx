@@ -20,6 +20,14 @@ export default function AirlineSearch() {
     const [returnFlights, setReturnFlights] = useState([]);
     const [returnSortOption, setReturnSortOption] = useState("출발시간순");
     const returnDate = queryParams.get("returnDate");
+    // 시간 포맷 함수(yyyy-mm-dd 형식 수정)
+    function formatTimeLabel(dateTimeStr) {
+        if (!dateTimeStr || dateTimeStr.length !== 12) return "";
+        const hour = dateTimeStr.slice(8, 10);
+        const minute = dateTimeStr.slice(10, 12);
+        return `${hour}시 ${minute}분`;
+    }
+
 
     useEffect(() => {
         if (departure && arrival && date) {
@@ -173,7 +181,7 @@ export default function AirlineSearch() {
                                     {flight.airlineName} {flight.flightNumber}
                                 </p>
                                 <p className="text-gray-700">
-                                    출발 : {flight.departureTime} | 도착 : {flight.arrivalTime}
+                                    출발 : {formatTimeLabel(flight.departureTime)} | 도착 : {formatTimeLabel(flight.arrivalTime)}
                                 </p>
                                 <p className="text-sm text-gray-500 mt-1">
                                     {flight.departure} → {flight.arrival}
@@ -203,7 +211,7 @@ export default function AirlineSearch() {
                                                         {r.airlineName} {r.flightNumber}
                                                     </p>
                                                     <p className="text-sm text-gray-700">
-                                                        출발 : {r.departureTime} | 도착 : {r.arrivalTime}
+                                                        출발 : {formatTimeLabel(r.departureTime)} | 도착 : {formatTimeLabel(r.arrivalTime)}
                                                     </p>
                                                     <p className="text-sm text-gray-500">
                                                         {r.departure} → {r.arrival}
