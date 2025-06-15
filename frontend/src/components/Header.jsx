@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useTranslation } from "react-i18next"; // ✅ 추가
+import { useTranslation } from "react-i18next";
 import "react-datepicker/dist/react-datepicker.css";
 import {
     FaPlaneDeparture,
@@ -12,19 +12,21 @@ import {
     FaGlobe,
     FaHeart,
     FaUserCircle,
-    FaBars, FaQuestionCircle,
+    FaBars,
+    FaQuestionCircle
 } from "react-icons/fa";
 
 import axios from "axios";
 import LoginSignupModal from "./LoginSignupModal";
 
 export default function Header({ searchData }) {
-    const { t, i18n } = useTranslation(); // ✅ 추가
-    const [airportOptions, setAirportOptions] = useState([]);
+    const { t, i18n } = useTranslation();
     const navigate = useNavigate();
     const location = useLocation();
 
-    const [selectedTab, setSelectedTab] = useState("flight"); // ✅ 추가
+    const [selectedTab, setSelectedTab] = useState("flight");
+
+    const [airportOptions, setAirportOptions] = useState([]);
     const [departure, setDeparture] = useState(null);
     const [arrival, setArrival] = useState(null);
     const [startDate, setStartDate] = useState(null);
@@ -32,11 +34,40 @@ export default function Header({ searchData }) {
     const [passengers, setPassengers] = useState(1);
     const [directOnly, setDirectOnly] = useState(false);
 
-    // 햄버거 메뉴 상태 및 외부 클릭 감지를 위한 ref
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const [userName, setUserName] = useState("");
+
     const [hamburgerOpen, setHamburgerOpen] = useState(false);
     const menuRef = useRef(null);
 
-    // 외부 클릭 시 햄버거 메뉴 닫기
+    useEffect(() => {
+        axios
+            .get("/api/air", { params: { page: 0, size: 1000 } })
+            .then((response) => {
+                const allFlights = response.data.content;
+                const uniqueAirports = [...new Set(allFlights.map((f) => f.departure))];
+                setAirportOptions(
+                    uniqueAirports.map((airport) => ({
+                        value: airport,
+                        label: airport
+                    }))
+                );
+            })
+            .catch((error) => {
+                console.error("공항 데이터 로드 실패", error);
+            });
+    }, []);
+
+    useEffect(() => {
+        const savedUser = localStorage.getItem("user");
+        if (savedUser) {
+            const userData = JSON.parse(savedUser);
+            setUserName(userData.name);
+            setIsLoggedIn(true);
+        }
+    }, []);
+
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -47,34 +78,6 @@ export default function Header({ searchData }) {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    // 로그인 관련 상태
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [showModal, setShowModal] = useState(false);
-    const [userName, setUserName] = useState(""); // ✅ 사용자 이름 상태 추가
-
-    useEffect(() => {
-        axios.get("/api/air", {
-            params: { page: 0, size: 1000 } // 충분히 크게 받아오기
-        })
-            .then(response => {
-                const allFlights = response.data.content;  // ✨ content로 수정
-                const uniqueAirports = [...new Set(allFlights.map(f => f.departure))];
-                setAirportOptions(uniqueAirports.map(airport => ({ value: airport, label: airport })));
-                //로그인 유지 함수
-                const savedUser = localStorage.getItem("user");
-                if (savedUser) {
-                    const userData = JSON.parse(savedUser);
-                    setUserName(userData.name);
-                    setIsLoggedIn(true);
-                }
-            })
-            .catch(error => {
-                console.error("공항 데이터 로딩 실패", error);
-            });
-    }, []);
-
-    //   handleSearch 수정 05-19
-    // ✅ 수정///////////////////////////////////////////////////////
     const handleSearch = () => {
         if (!departure || !arrival || !startDate) {
             alert(t("header.alertSelectAll"));
@@ -84,132 +87,85 @@ export default function Header({ searchData }) {
             alert(t("header.alertSame"));
             return;
         }
-        /////////////////////////////////////////////////////////
 
-
-
-        // yyyyMMdd 포맷 함수 추가 - 05-19
-        const formatDate = (date) => {
-            const yyyy = date.getFullYear();
-            const mm = String(date.getMonth() + 1).padStart(2, '0');
-            const dd = String(date.getDate()).padStart(2, '0');
-            return `${yyyy}${mm}${dd}`;
-        };
-
-        //수정 2025-05-19
-        const searchParams = new URLSearchParams({
-            departure: departure.value,
-            arrival:arrival.value,
-            date: formatDate(startDate), // ✅ 여기에서 변경!
+        navigate("/airline_search", {
+            state: {
+                searchData: {
+                    departure,
+                    arrival,
+                    startDate,
+                    returnDate,
+                    passengers
+                }
+            }
         });
-        // 오는편 날짜가 있으면 추가
-        if (returnDate) {
-            searchParams.append('returnDate', formatDate(returnDate));
-        }
-
-        navigate(`/Airline_search?${searchParams.toString()}`);
     };
+
     const handleLogout = () => {
         localStorage.removeItem("user");
         setIsLoggedIn(false);
-        setUserName(""); // ✅ 로그아웃 시 사용자 이름 초기화
-        navigate("/");           // ✅ 로그아웃 후 홈으로 이동
+        setUserName("");
+        navigate("/");
     };
 
-    //  ✅ 추가 //////////////////////////////////////////////
     const changeLanguage = (lang) => {
         i18n.changeLanguage(lang);
         setHamburgerOpen(false);
     };
-///////////////////////////////////////////////////////////
-
 
     return (
         <div className="bg-[#03284F] text-white p-10 w-full">
             <div className="flex justify-between items-center">
                 <div className="text-4xl font-bold flex items-center space-x-2">
-                    <a href="http://localhost:3000/">Shinguair</a>
+                    <a href="/">Shinguair</a>
                 </div>
-                <div className="space-x-4 flex items-center">
+                <div className="space-x-4 flex items-center relative">
                     <FaGlobe />
                     <FaHeart />
                     <FaUserCircle />
-                    {/* ✅ 로그인/로그아웃 토글 → “로그아웃” 제거 */}
-                    {!isLoggedIn && (                       /* 로그인 안 됐을 때만 표시 */
+                    {!isLoggedIn && (
                         <span className="cursor-pointer" onClick={() => setShowModal(true)}>
-                {t("header.login")} {/* ✅ 수정 */}
-            </span>)}
-
-                    {/*  닉네임은 단순 표시 (마이페이지 이동 삭제) */}
-                    {isLoggedIn && (
-                        <span className="ml-2 font-semibold">
-              {userName}님
-            </span>
+                            {t("header.login")}
+                        </span>
                     )}
-
-                    {/*  햄버거 메뉴 아이콘 */}
+                    {isLoggedIn && <span className="ml-2 font-semibold">{userName}님</span>}
                     <FaBars className="text-xl cursor-pointer" onClick={() => setHamburgerOpen(!hamburgerOpen)} />
 
-                    {/*  햄버거 메뉴 드롭다운 */}
                     {hamburgerOpen && (
-                        <div
-                            ref={menuRef}
-                            className="absolute right-0 top-10 w-60 bg-white text-black rounded-xl shadow-lg z-50"
-                        >
+                        <div ref={menuRef} className="absolute right-0 top-10 w-60 bg-white text-black rounded-xl shadow-lg z-50">
                             <ul className="py-2 text-sm">
                                 <li className="px-5 py-3 hover:bg-gray-100 flex items-center cursor-pointer">
-                                    <FaPlaneDeparture className="mr-3 text-blue-600" /> {t("header.flight")} {/* ✅ 수정 */}
+                                    <FaPlaneDeparture className="mr-3 text-blue-600" /> {t("header.flight")}
                                 </li>
                                 <li className="px-5 py-3 hover:bg-gray-100 flex items-center cursor-pointer">
-                                    <FaHotel className="mr-3 text-blue-600" /> {t("header.hotel")} {/* ✅ 수정 */}
+                                    <FaHotel className="mr-3 text-blue-600" /> {t("header.hotel")}
                                 </li>
                                 <li className="px-5 py-3 hover:bg-gray-100 flex items-center cursor-pointer">
-                                    <FaCar className="mr-3 text-blue-600" />  {t("header.rentcar")} {/* ✅ 수정 */}
+                                    <FaCar className="mr-3 text-blue-600" /> {t("header.rentcar")}
                                 </li>
-                                {/*  도움말 메뉴 항목 추가 */}
-
                                 <hr className="my-1" />
-                                {/*  마이페이지 클릭 시 /mypage 이동 */}
                                 {isLoggedIn && (
-                                    <li
-                                        className="px-5 py-3 hover:bg-gray-100 flex items-center cursor-pointer"
-                                        onClick={() => {
-                                            navigate("/mypage");          //  이동
-                                            setHamburgerOpen(false);      //  메뉴 닫기
-                                        }}
-                                    >
-                                        <FaUserCircle className="mr-3 text-gray-600" />  {t("header.mypage")} {/* ✅ 수정 */}
-
-                                    </li>)}
-                                {/*  로그아웃 메뉴 추가 */}
-                                {isLoggedIn && (
-                                    <li
-                                        className="px-5 py-3 hover:bg-gray-100 flex items-center cursor-pointer text-red-500"
-                                        onClick={handleLogout}
-                                    >
-                                        <FaUserCircle className="mr-3" /> {t("header.logout")} {/* ✅ 수정 */}
+                                    <li className="px-5 py-3 hover:bg-gray-100 flex items-center cursor-pointer" onClick={() => { navigate("/mypage"); setHamburgerOpen(false); }}>
+                                        <FaUserCircle className="mr-3 text-gray-600" /> {t("header.mypage")}
                                     </li>
                                 )}
-                                {/*  도움말 메뉴 항목 추가 */}
-                                <li
-                                    className="px-5 py-3 hover:bg-gray-100 flex items-center cursor-pointer"
-                                    onClick={() => {
-                                        navigate("/help"); // 도움말 페이지로 이동
-                                        setHamburgerOpen(false); // 메뉴 닫기
-                                    }}
-                                >
-                                    <FaQuestionCircle className="mr-3 text-gray-600" /> {t("header.help")} {/* ✅ 수정 */}
+                                {isLoggedIn && (
+                                    <li className="px-5 py-3 hover:bg-gray-100 flex items-center cursor-pointer text-red-500" onClick={handleLogout}>
+                                        <FaUserCircle className="mr-3" /> {t("header.logout")}
+                                    </li>
+                                )}
+                                <li className="px-5 py-3 hover:bg-gray-100 flex items-center cursor-pointer" onClick={() => { navigate("/help"); setHamburgerOpen(false); }}>
+                                    <FaQuestionCircle className="mr-3 text-gray-600" /> {t("header.help")}
                                 </li>
                                 <li className="px-5 py-3 hover:bg-gray-100 flex items-start cursor-pointer">
                                     <FaGlobe className="mr-3 mt-1 text-gray-600" />
                                     <div className="flex flex-col space-y-1">
-                                        <span className="font-semibold">{t("header.language")} {/* ✅ 수정 */} </span>
+                                        <span className="font-semibold">{t("header.language")}</span>
                                         <div className="flex gap-4 mt-1">
-                                            <button onClick={() => changeLanguage("ko")} className="text-sm hover:underline">한국어</button> {/* ✅ 수정 */}
-                                            <button onClick={() => changeLanguage("en")} className="text-sm hover:underline">English</button>{/* ✅ 수정 */}
-                                            <button onClick={() => changeLanguage("ja")} className="text-sm hover:underline">日本語</button>{/* ✅ 수정 */}
+                                            <button onClick={() => changeLanguage("ko")} className="text-sm hover:underline">한국어</button>
+                                            <button onClick={() => changeLanguage("en")} className="text-sm hover:underline">English</button>
+                                            <button onClick={() => changeLanguage("ja")} className="text-sm hover:underline">日本語</button>
                                         </div>
-
                                     </div>
                                 </li>
                             </ul>
@@ -218,14 +174,9 @@ export default function Header({ searchData }) {
                 </div>
             </div>
 
-            {/* ✅ 수정탭 버튼 렌더링 */}
             <div className="space-x-2 hidden md:flex mt-6">
                 {["flight", "hotel", "rentcar"].map((tab) => (
-                    <button
-                        key={tab}
-                        onClick={() => setSelectedTab(tab)}
-                        className={`btn btn-sm ${selectedTab === tab ? "btn-primary" : "btn-outline"}`}
-                    >
+                    <button key={tab} onClick={() => setSelectedTab(tab)} className={`btn btn-sm ${selectedTab === tab ? "btn-primary" : "btn-outline"}`}>
                         {tab === "flight" && <FaPlaneDeparture />}
                         {tab === "hotel" && <FaHotel />}
                         {tab === "rentcar" && <FaCar />}
@@ -234,7 +185,6 @@ export default function Header({ searchData }) {
                 ))}
             </div>
 
-            {/* ✅ 수정 항공편 검색 폼 --------------------------------------------------------------------------------------------*/}
             {selectedTab === "flight" && (
                 <div className="bg-white rounded-xl mt-4 p-4 grid md:grid-cols-7 gap-2 text-black items-end">
                     <div>
@@ -279,19 +229,27 @@ export default function Header({ searchData }) {
                                 <p className="text-red-500">{t("header.noData")}</p>
                             ) : (
                                 <div>
-                                    <p><strong>{t("header.departure")}:</strong> {searchData.departure.label}</p>
-                                    <p><strong>{t("header.arrival")}:</strong> {searchData.arrival.label}</p>
-                                    <p><strong>{t("header.startDate")}:</strong> {searchData.startDate.toLocaleDateString()}</p>
-                                    {searchData.returnDate && <p><strong>{t("header.returnDate")}:</strong> {searchData.returnDate.toLocaleDateString()}</p>}
-                                    <p><strong>{t("header.passengers")}:</strong> {t("header.adult")} {searchData.passengers}{t("header.person")}</p>
+                                    {searchData?.departure?.label && (
+                                        <p><strong>{t("header.departure")}:</strong> {searchData.departure.label}</p>
+                                    )}
+                                    {searchData?.arrival?.label && (
+                                        <p><strong>{t("header.arrival")}:</strong> {searchData.arrival.label}</p>
+                                    )}
+                                    {searchData?.startDate && (
+                                        <p><strong>{t("header.startDate")}:</strong> {new Date(searchData.startDate).toLocaleDateString()}</p>
+                                    )}
+                                    {searchData?.returnDate && (
+                                        <p><strong>{t("header.returnDate")}:</strong> {new Date(searchData.returnDate).toLocaleDateString()}</p>
+                                    )}
+                                    {searchData?.passengers && (
+                                        <p><strong>{t("header.passengers")}:</strong> {t("header.adult")} {searchData.passengers}{t("header.person")}</p>
+                                    )}
                                 </div>
                             )}
                         </div>
                     )}
                 </div>
             )}
-
-            {/* ----------------------------------------------------------------------------------------------------------------- */}
 
             <LoginSignupModal
                 open={showModal}

@@ -1,0 +1,158 @@
+{
+  "login": {
+    "title": "ログイン",
+    "username": "ユーザー名",
+    "password": "パスワード",
+    "button": "ログイン",
+    "alert": "ユーザー名とパスワードを入力してください。",
+    "success": "ログイン成功",
+    "noAccount": "まだアカウントをお持ちではありませんか？",
+    "toSignup": "新規登録"
+  },
+  "signup": {
+    "title": "新規登録",
+    "name": "名前",
+    "phone": "電話番号",
+    "email": "メールアドレス",
+    "button": "登録する",
+    "success": "登録が完了しました",
+    "hasAccount": "すでにアカウントをお持ちですか？",
+    "toLogin": "ログイン"
+  },
+  "error": {
+    "default": "リクエストの処理中にエラーが発生しました。"
+  },
+  "header": {
+    "flight": "航空券",
+    "hotel": "ホテル",
+    "rentcar": "レンタカー",
+    "search": "検索",
+    "departure": "出発地",
+    "arrival": "到着地",
+    "startDate": "出発日",
+    "returnDate": "帰国日",
+    "passengers": "乗客",
+    "directOnly": "直行便のみ表示",
+    "departurePlaceholder": "出発空港を選択",
+    "arrivalPlaceholder": "到着空港を選択",
+    "datePlaceholder": "日付を選択",
+    "adult": "大人",
+    "person": "名",
+    "flightText": "最安値の航空券を検索・予約しましょう。",
+    "hotelText": "最適なホテルを見つけましょう。",
+    "rentcarText": "レンタカーを簡単に予約しましょう。",
+    "alertSelectAll": "出発地・到着地・出発日を選択してください。",
+    "alertSame": "出発地と到着地は異なる必要があります。",
+    "login": "ログイン",
+    "noData": "該当する航空便情報がありません。",
+    "language": "言語",
+    "help": "ヘルプ",
+    "logout": "ログアウト",
+    "mypage": "マイページ",
+    "hamburger": {
+      "myPage": "マイページ",
+      "logout": "ログアウト",
+      "help": "ヘルプ",
+      "language": "言語",
+      "korean": "🇰🇷 韓国語",
+      "english": "🇺🇸 英語",
+      "japanese": "🇯🇵 日本語"
+    }
+  },
+  "mypage": {
+    "title": "マイページ",
+    "greeting": "こんにちは！",
+    "loading": "読み込み中...",
+    "logout": "ログアウト",
+    "deleteAccount": {
+      "button": "退会する",
+      "confirm": "本当に退会しますか？この操作は元に戻せません。",
+      "success": "退会が正常に完了しました。",
+      "failure": "退会に失敗しました。",
+      "serverError": "サーバーエラーにより退会できませんでした。"
+    },
+    "menu": {
+      "reservations": "予約一覧",
+      "alerts": "価格通知",
+      "account": "アカウント"
+    },
+    "accountSection": {
+      "title": "アカウント",
+      "emailLabel": "メールアドレス",
+      "subscription1": "こうどく",
+      "subscription2": "最新の旅行商品、ニュース、人気の目的地をメールで受け取りたいです。",
+      "airportPreference": {
+        "title": "希望する出発空港",
+        "description": "最適な割引商品とおすすめの旅行先を表示するために、希望する空港を追加してください。",
+        "addButton": "空港を追加"
+      }
+    }
+  },
+  "footer": {
+    "brand": {
+      "name": "Shinguair",
+      "description": "最高のサービスで快適な旅をご提供します。"
+    },
+    "company": {
+      "title": "会社情報",
+      "about": "会社概要",
+      "newsroom": "ニュースルーム",
+      "careers": "採用情報",
+      "investors": "投資家向け情報"
+    },
+    "support": {
+      "title": "サポート",
+      "faq": "よくある質問",
+      "manageBooking": "予約管理",
+      "refundPolicy": "返金ポリシー",
+      "customerService": "カスタマーサービス"
+    },
+    "contact": {
+      "title": "お問い合わせ",
+      "address": "ソウル特別市江南区テヘラン路123",
+      "phone": "1588-0000",
+      "email": "support@shinguair.com"
+    },
+    "copyright": "© 2025 Shinguair. 無断転載を禁じます。"
+  },
+  "mainPage": {
+    "categories": {
+      "hotel": "ホテル",
+      "rentcar": "レンタカー",
+      "searchAnywhere": "どこでも検索"
+    },
+    "promotion": {
+      "title": "えっ、まじで？",
+      "subtitle": "20％以上お得な航空券をチェックしよう",
+      "description": "アプリの「Drops」で、指定の空港発の本日限定航空券を20％以上割引で見つけよう。",
+      "button": "Dropsをチェック"
+    },
+    "faq": {
+      "title": "ShinguAirで航空券を予約するには",
+      "questions": [
+        "ShinguAirはどのように機能しますか？",
+        "ShinguAirで最安値の航空券を見つけるには？",
+        "今どこへの航空券を予約するのがいいですか？",
+        "ShinguAirのサイトで直接予約するのですか？",
+        "予約した後はどうなりますか？",
+        "ShinguAirでホテルも検索できますか？",
+        "レンタカーも検索できますか？",
+        "価格通知とは何ですか？",
+        "変更可能な航空券は予約できますか？",
+        "CO2排出量が少ない便を選べますか？"
+      ]
+    },
+    "globalSites": {
+      "title": "世界各国のサイト"
+    },
+    "planTrip": {
+      "title": "旅行を計画しよう",
+      "filters": ["空港", "国", "地域", "都市"],
+      "items": [
+        ["ハノイの航空券", "カリボ国際空港 特価航空券", "デンパサール・バリ 往復便"],
+        ["東京成田 行き", "東京羽田 行き", "プーケット 往復便"],
+        ["ソウル金浦 往復便", "ホーチミン 往復航空券", "仁川国際航空券"]
+      ]
+    }
+  }
+}

@@ -1,0 +1,158 @@
+{
+  "login": {
+    "title": "Login",
+    "username": "Username",
+    "password": "Password",
+    "button": "Login",
+    "alert": "Please enter your username and password.",
+    "success": "Login successful",
+    "noAccount": "Don't have an account?",
+    "toSignup": "Sign up"
+  },
+  "signup": {
+    "title": "Sign Up",
+    "name": "Name",
+    "phone": "Phone Number",
+    "email": "Email Address",
+    "button": "Sign Up",
+    "success": "Sign up successful",
+    "hasAccount": "Already have an account?",
+    "toLogin": "Login"
+  },
+  "error": {
+    "default": "An error occurred while processing your request."
+  },
+  "header": {
+    "flight": "Flights",
+    "hotel": "Hotels",
+    "rentcar": "Rental Cars",
+    "search": "Search",
+    "departure": "Departure",
+    "arrival": "Arrival",
+    "startDate": "Departure Date",
+    "returnDate": "Return Date",
+    "passengers": "Passengers",
+    "directOnly": "Direct flights only",
+    "departurePlaceholder": "Select departure",
+    "arrivalPlaceholder": "Select arrival",
+    "datePlaceholder": "Select date",
+    "adult": "Adult",
+    "person": "person(s)",
+    "flightText": "Millions of cheap flights. One simple search.",
+    "hotelText": "Find the perfect hotel.",
+    "rentcarText": "Book rental cars easily.",
+    "alertSelectAll": "Please select departure, arrival, and departure date.",
+    "alertSame": "Departure and arrival locations must be different.",
+    "login": "Login",
+    "noData": "No matching flight information available.",
+    "language": "Language",
+    "help": "Help",
+    "logout": "Logout",
+    "mypage": "My Page",
+    "hamburger": {
+      "myPage": "My Page",
+      "logout": "Logout",
+      "help": "Help",
+      "language": "Language",
+      "korean": "🇰🇷 Korean",
+      "english": "🇺🇸 English",
+      "japanese": "🇯🇵 Japanese"
+    }
+  },
+  "mypage": {
+    "title": "My Page",
+    "greeting": "Hello!",
+    "loading": "Loading...",
+    "logout": "Logout",
+    "deleteAccount": {
+      "button": "Delete Account",
+      "confirm": "Are you sure you want to delete your account? This action cannot be undone.",
+      "success": "Your account has been successfully deleted.",
+      "failure": "Account deletion failed.",
+      "serverError": "Server error occurred. Failed to delete account."
+    },
+    "menu": {
+      "reservations": "My Reservations",
+      "alerts": "Price Alerts",
+      "account": "Account"
+    },
+    "accountSection": {
+      "title": "Account",
+      "emailLabel": "Email",
+      "subscription1": "Subscribe",
+      "subscription2": "I want to receive emails about the latest travel deals, news, and popular destinations.",
+      "airportPreference": {
+        "title": "Preferred Departure Airport",
+        "description": "Add your preferred airport to get the best deals and recommended destinations.",
+        "addButton": "Add Airport"
+      }
+    }
+  },
+  "footer": {
+    "brand": {
+      "name": "Shinguair",
+      "description": "Providing the best service for a comfortable journey."
+    },
+    "company": {
+      "title": "Company Info",
+      "about": "About Us",
+      "newsroom": "Newsroom",
+      "careers": "Careers",
+      "investors": "Investor Relations"
+    },
+    "support": {
+      "title": "Customer Support",
+      "faq": "FAQ",
+      "manageBooking": "Manage Booking",
+      "refundPolicy": "Refund Policy",
+      "customerService": "Customer Service"
+    },
+    "contact": {
+      "title": "Contact",
+      "address": "123 Teheran-ro, Gangnam-gu, Seoul",
+      "phone": "1588-0000",
+      "email": "support@shinguair.com"
+    },
+    "copyright": "© 2025 Shinguair. All rights reserved."
+  },
+  "mainPage": {
+    "categories": {
+      "hotel": "Hotels",
+      "rentcar": "Rental Cars",
+      "searchAnywhere": "Search Anywhere"
+    },
+    "promotion": {
+      "title": "Find Flights Over 20% Off",
+      "subtitle": "Wait, what?",
+      "description": "Open Drops in the app and discover today’s flights departing from your chosen airport at more than 20% off.",
+      "button": "Explore Drops"
+    },
+    "faq": {
+      "title": "Booking Flights with ShinguAir",
+      "questions": [
+        "How does ShinguAir work?",
+        "How can I find the cheapest flights on ShinguAir?",
+        "Where should I book a flight to right now?",
+        "Do I book directly on ShinguAir?",
+        "What happens after I book a flight?",
+        "Can I search for hotels on ShinguAir?",
+        "Can I search for rental cars as well?",
+        "What is a price alert?",
+        "Can I book flexible tickets?",
+        "Can I choose flights with lower CO2 emissions?"
+      ]
+    },
+    "globalSites": {
+      "title": "Global Sites"
+    },
+    "planTrip": {
+      "title": "Plan Your Trip",
+      "filters": ["Airport", "Country", "Region", "City"],
+      "items": [
+        ["Flights to Hanoi", "Deals from Kalibo International Airport", "Round-trip to Denpasar Bali"],
+        ["Flights to Tokyo Narita", "Flights to Tokyo Haneda", "Round-trip to Phuket"],
+        ["Round-trip from Seoul Gimpo", "Flights to Ho Chi Minh", "Flights from Incheon International Airport"]
+      ]
+    }
+  }
+}

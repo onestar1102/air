@@ -1,0 +1,158 @@
+{
+  "login": {
+    "title": "로그인",
+    "username": "아이디",
+    "password": "비밀번호",
+    "button": "로그인",
+    "alert": "아이디와 비밀번호를 입력해주세요.",
+    "success": "로그인 성공",
+    "noAccount": "아직 계정이 없으신가요?",
+    "toSignup": "회원가입"
+  },
+  "signup": {
+    "title": "회원가입",
+    "name": "이름",
+    "phone": "전화번호",
+    "email": "이메일 주소",
+    "button": "가입하기",
+    "success": "회원가입 성공",
+    "hasAccount": "이미 계정이 있으신가요?",
+    "toLogin": "로그인"
+  },
+  "error": {
+    "default": "요청 처리 중 오류가 발생했습니다."
+  },
+  "header": {
+    "flight": "항공권",
+    "hotel": "호텔",
+    "rentcar": "렌터카",
+    "search": "검색",
+    "departure": "출발지",
+    "arrival": "도착지",
+    "startDate": "출발일",
+    "returnDate": "귀국일",
+    "passengers": "인원",
+    "directOnly": "직항만 보기",
+    "departurePlaceholder": "출발 공항 선택",
+    "arrivalPlaceholder": "도착 공항 선택",
+    "datePlaceholder": "날짜 선택",
+    "adult": "성인",
+    "person": "명",
+    "flightText": "수백만 개의 저가 항공권. 검색 한 번으로 간단하게.",
+    "hotelText": "최적의 호텔을 찾아보세요.",
+    "rentcarText": "간편하게 렌터카를 예약하세요.",
+    "alertSelectAll": "출발지, 도착지, 출발일을 선택해주세요.",
+    "alertSame": "출발지와 도착지는 달라야 합니다.",
+    "login": "로그인",
+    "noData": "해당하는 항공편 정보가 없습니다.",
+    "language": "언어",
+    "help": "도움말",
+    "logout": "로그아웃",
+    "mypage": "마이페이지",
+    "hamburger": {
+      "myPage": "마이페이지",
+      "logout": "로그아웃",
+      "help": "도움말",
+      "language": "언어",
+      "korean": "🇰🇷 한국어",
+      "english": "🇺🇸 영어",
+      "japanese": "🇯🇵 일본어"
+    }
+  },
+  "mypage": {
+    "title": "마이페이지",
+    "greeting": "안녕하세요!",
+    "loading": "로딩 중...",
+    "logout": "로그아웃",
+    "deleteAccount": {
+      "button": "회원 탈퇴",
+      "confirm": "정말로 회원 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
+      "success": "회원 탈퇴가 성공적으로 완료되었습니다.",
+      "failure": "회원 탈퇴에 실패했습니다.",
+      "serverError": "서버 오류로 회원 탈퇴에 실패했습니다."
+    },
+    "menu": {
+      "reservations": "내 예약",
+      "alerts": "가격 변동 알림",
+      "account": "계정"
+    },
+    "accountSection": {
+      "title": "계정",
+      "emailLabel": "이메일",
+      "subscription1": "구독",
+      "subscription2": "최신 여행 상품, 소식, 인기 여행지에 대해 메일로 안내 받고 싶어요.",
+      "airportPreference": {
+        "title": "선호하는 출발 공항",
+        "description": "가장 적합한 특가 상품과 추천 여행지를 보여드릴 수 있도록 선호하는 공항을 추가하세요.",
+        "addButton": "공항 추가하기"
+      }
+    }
+  },
+  "footer": {
+    "brand": {
+      "name": "Shinguair",
+      "description": "최고의 서비스로 편안한 여행을 제공합니다."
+    },
+    "company": {
+      "title": "회사 정보",
+      "about": "회사 소개",
+      "newsroom": "뉴스룸",
+      "careers": "채용 정보",
+      "investors": "투자자 정보"
+    },
+    "support": {
+      "title": "고객 지원",
+      "faq": "자주 묻는 질문",
+      "manageBooking": "예약 관리",
+      "refundPolicy": "환불 정책",
+      "customerService": "고객센터"
+    },
+    "contact": {
+      "title": "연락처",
+      "address": "서울특별시 강남구 테헤란로 123",
+      "phone": "1588-0000",
+      "email": "support@shinguair.com"
+    },
+    "copyright": "© 2025 Shinguair. 모든 권리 보유."
+  },
+  "mainPage": {
+    "categories": {
+      "hotel": "호텔",
+      "rentcar": "렌터카",
+      "searchAnywhere": "어디든지 검색"
+    },
+    "promotion": {
+      "title": "20% 이상 저렴해진 항공권을 찾아보세요",
+      "subtitle": "잠깐, 뭐라고요?",
+      "description": "앱에서 Drops를 열어 원하는 공항에서 출발하는 오늘의 항공편을 20% 이상 할인된 가격으로 만나보세요.",
+      "button": "Drops 둘러보기"
+    },
+    "faq": {
+      "title": "ShinguAir로 항공권 예약하기",
+      "questions": [
+        "ShinguAir는 어떻게 작동하나요?",
+        "ShinguAir에서 최저가 항공권을 어떻게 찾을 수 있나요?",
+        "지금 어디로 가는 항공권을 예약하는 게 좋은가요?",
+        "ShinguAir 사이트에서 항공권을 예약하는 건가요?",
+        "항공권을 예약한 후에는 어떻게 되나요?",
+        "ShinguAir에서 호텔도 검색할 수 있나요?",
+        "렌터카 상품도 검색할 수 있나요?",
+        "가격 변동 알림이란 무엇인가요?",
+        "변경 가능한 항공권을 예매할 수 있나요?",
+        "이산화탄소 배출량이 적은 항공편을 예약할 수 있나요?"
+      ]
+    },
+    "globalSites": {
+      "title": "전 세계 사이트"
+    },
+    "planTrip": {
+      "title": "여행 계획하기",
+      "filters": ["공항", "국가", "지역", "도시"],
+      "items": [
+        ["하노이 항공권", "칼리보 국제공항 특가 항공권", "덴파사르·발리 왕복 항공편"],
+        ["도쿄 나리타행", "도쿄 하네다행", "푸켓 왕복 항공편"],
+        ["서울 김포 왕복 항공편", "호치민 왕복 항공권", "인천 국제공항 항공권"]
+      ]
+    }
+  }
+}

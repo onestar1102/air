@@ -4,10 +4,15 @@ import axios from "axios";
 
 export default function AirlineSearch() {
     const location = useLocation();
+    //추가
+    const searchData = location.state?.searchData;
     const queryParams = new URLSearchParams(location.search);
-    const departure = queryParams.get("departure");
-    const arrival = queryParams.get("arrival");
-    const date = queryParams.get("date");
+    // 헤더 코드에 맞게 변경 06.16
+    const departure = searchData?.departure?.value;
+    const arrival = searchData?.arrival?.value;
+    const date = searchData?.startDate ? formatDate(searchData.startDate) : null;
+    const returnDate = searchData?.returnDate ? formatDate(searchData.returnDate) : null;
+    console.log("받은 searchData", location.state?.searchData);
 
     const [page, setPage] = useState(0);
     const [size, setSize] = useState(21);
@@ -19,7 +24,14 @@ export default function AirlineSearch() {
     const [selectedFlight, setSelectedFlight] = useState(null);
     const [returnFlights, setReturnFlights] = useState([]);
     const [returnSortOption, setReturnSortOption] = useState("출발시간순");
-    const returnDate = queryParams.get("returnDate");
+    // 추가 06.16
+    function formatDate(dateObj) {
+        const yyyy = dateObj.getFullYear();
+        const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
+        const dd = String(dateObj.getDate()).padStart(2, "0");
+        return `${yyyy}${mm}${dd}`;
+    }
+
     // 시간 포맷 함수(yyyy-mm-dd 형식 수정)
     function formatTimeLabel(dateTimeStr) {
         if (!dateTimeStr || dateTimeStr.length !== 12) return "";
